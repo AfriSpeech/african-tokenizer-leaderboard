@@ -146,6 +146,10 @@ tbody tr.row[aria-expanded='true'] { background: var(--bg-accent); }
 .card-title { font-weight: 600; margin-bottom: 4px; }
 .card-text { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
 
+.check { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 10px 0; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-2); }
+.check input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--accent); }
+.check .field-hint { display: block; font-weight: 400; }
+.companion-note { margin: -4px 0 14px; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
 .pill { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--warn-bg); color: var(--warn-text); }
 .notice { padding: 14px 16px; border-radius: 10px; font-size: 14px; }
 .notice.error { background: var(--error-bg); color: var(--error-text); }

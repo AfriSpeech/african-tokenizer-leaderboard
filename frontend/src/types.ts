@@ -4,6 +4,7 @@ export interface Language {
   code: string
   name: string
   group: 'african' | 'high_resource'
+  companion: string | null
   has_parity: boolean
 }
 
@@ -32,6 +33,9 @@ export interface RankingResponse {
   rows: RankingRow[]
   lang: string
   langs?: string[] | null
+  companions?: Record<string, string>
+  hr?: boolean
+  n_langs?: number
   n_african?: number
 }
 

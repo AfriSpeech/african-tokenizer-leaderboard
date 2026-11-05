@@ -27,8 +27,25 @@ each token carries.
 **Vocabulary size.** How many distinct tokens the tokenizer has. Larger vocabularies tend to
 give fewer tokens per word, at the cost of a bigger embedding table in the model.
 
-**All African languages** averages each tokenizer's per-language values with every language
-counting equally, so large languages don't dominate.
+## Companion languages
+
+Almost every African language is written and spoken alongside a high-resource language:
+English, French, Arabic, Portuguese or Spanish. A tokenizer is only really useful for Twi if it
+also handles the English around it, so by default:
+
+- **All languages** includes those five high-resource languages along with the 313 African
+  ones.
+- **Each African language you pick is ranked together with its companion**, the high-resource
+  language it is mainly used alongside: Twi with English, Wolof with French, Kimbundu with
+  Portuguese, Moroccan Arabic with Arabic. The table shows a column for each.
+
+Companions come from the countries each language is used in (Africa Corpus metadata),
+weighted by population, mapped to each country's dominant high-resource language, with
+reviewed corrections; the full list is in `benchmark/companion_languages.csv`. Untick
+**Include high-resource languages** to score African languages alone.
+
+Several languages are averaged with each language counting equally, so large languages don't
+dominate.
 
 ## The benchmark text
 

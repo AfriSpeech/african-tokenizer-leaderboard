@@ -2,12 +2,11 @@ import { useId, useMemo, useRef, useState } from 'react'
 import type { Language } from '../types'
 
 export const ALL = 'all'
-export const AFRICAN = 'african'
 
 interface Props {
   languages: Language[]
-  nAfrican: number
-  /** ['all'] = every language (default), ['african'] = African preset, [] = none yet, else codes. */
+  includeHighResource: boolean
+  /** ['all'] = every language (default), [] = none yet, else language codes. */
   value: string[]
   onChange: (codes: string[]) => void
 }
@@ -23,18 +22,17 @@ const GROUP_LABEL: Record<string, string> = {
   african: 'African languages',
 }
 
-export default function LanguagePicker({ languages, nAfrican, value, onChange }: Props) {
+export default function LanguagePicker({ languages, includeHighResource, value, onChange }: Props) {
   const id = useId()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const byCode = useMemo(() => new Map(languages.map((l) => [l.code, l])), [languages])
-  const allLabel = `All languages (${languages.length})`
-  const africanLabel = `All African languages (${nAfrican})`
-  const isPreset = value.length === 1 && (value[0] === ALL || value[0] === AFRICAN)
-  const chipName = (c: string) =>
-    c === ALL ? allLabel : c === AFRICAN ? africanLabel : byCode.get(c)?.name ?? c
+  const nAll = includeHighResource ? languages.length : languages.filter((l) => l.group === 'african').length
+  const allLabel = `All languages (${nAll})`
+  const isPreset = value.length === 1 && value[0] === ALL
+  const chipName = (c: string) => (c === ALL ? allLabel : byCode.get(c)?.name ?? c)
 
   const options = useMemo(() => {
     const qq = query.trim().toLowerCase()
@@ -42,17 +40,16 @@ export default function LanguagePicker({ languages, nAfrican, value, onChange }:
       !qq || l.name.toLowerCase().includes(qq) || l.code.toLowerCase().startsWith(qq)
     const out: Option[] = []
     if (!qq || allLabel.toLowerCase().includes(qq)) out.push({ code: ALL, name: allLabel, group: '' })
-    if (!qq || africanLabel.toLowerCase().includes(qq)) out.push({ code: AFRICAN, name: africanLabel, group: '' })
-    for (const group of ['high_resource', 'african'] as const) {
+    for (const group of (includeHighResource ? ['high_resource', 'african'] : ['african']) as Array<'high_resource' | 'african'>) {
       for (const l of languages.filter((x) => x.group === group && match(x))) {
         out.push({ code: l.code, name: l.name, group })
       }
     }
     return out
-  }, [query, languages, allLabel, africanLabel])
+  }, [query, languages, allLabel, includeHighResource])
 
   const toggle = (o: Option) => {
-    if (o.code === ALL || o.code === AFRICAN) {
+    if (o.code === ALL) {
       onChange([o.code])
       setOpen(false)
       inputRef.current?.blur()
@@ -142,14 +139,18 @@ export default function LanguagePicker({ languages, nAfrican, value, onChange }:
                 >
                   <span className="picker-check" aria-hidden="true">{checked ? '✓' : ''}</span>
                   <span style={{ flex: 1 }}>{o.name}</span>
-                  {o.code !== ALL && o.code !== AFRICAN && <span className="code">{o.code}</span>}
+                  {o.code !== ALL && <span className="code">{o.code}</span>}
                 </div>
               </li>
             )
           })}
         </ul>
       )}
-      <span className="field-hint">Remove “All languages” to pick your own, e.g. “Twi” and “English”; several are averaged, each counting equally.</span>
+      <span className="field-hint">
+        {includeHighResource
+          ? '“All languages” includes English, French, Arabic, Portuguese and Spanish, the high-resource languages used alongside African languages. Remove it to pick your own; each picked language is ranked with its companion.'
+          : 'African languages only. Remove “All languages” to pick your own.'}
+      </span>
     </div>
   )
 }

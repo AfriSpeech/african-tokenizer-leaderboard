@@ -6,11 +6,16 @@ Per tokenizer and language:
   unk_ratio        unknown tokens / tokens
   parity           tokens on the language's parity verses / tokens on the same verses in
                    English, both with the same tokenizer (parity_en__<lang> sets)
-"all" (every language) and "african" (African languages only) average per-language values
-with equal weight per language, as does a custom set such as "twi,en".
+"all" and custom sets ("twi,yor") average per-language values with equal weight per language.
+With high-resource languages included (the default), "all" covers English, French, Arabic,
+Portuguese and Spanish too, and every picked African language brings its companion: the
+high-resource language it is mainly used alongside (benchmark/companion_languages.csv), so
+Twi ranks as Twi + English. Without them, scores cover African languages only.
 """
 
+import csv
 from functools import lru_cache
+from pathlib import Path
 
 import pandas as pd
 from fastapi import APIRouter, HTTPException
@@ -19,7 +24,12 @@ router = APIRouter(prefix="/api/v2")
 
 OVERALL_DOMAINS = {"lang_overall", "multilingual_overall"}
 ALL_LANGS = "all"  # every language in the benchmark
-ALL_AFRICAN = "african"  # the African languages only
+
+COMPANIONS: dict[str, str] = {
+    r["code"]: r["companion"]
+    for r in csv.DictReader(open(Path(__file__).parent / "benchmark" / "companion_languages.csv",
+                                 encoding="utf-8"))
+}
 
 # Friendly names for well-known tokenizers; everything else shows its repo name.
 DISPLAY = {
@@ -56,6 +66,7 @@ def _languages() -> list[dict]:
             "code": code,
             "name": m["pretty_name"],
             "group": m.get("group", "african"),
+            "companion": COMPANIONS.get(code),
             "has_parity": bool(m.get("parities")),
         })
     return sorted(out, key=lambda x: (x["group"] != "african", x["name"].lower()))
@@ -116,8 +127,8 @@ def languages() -> dict:
 
 
 def parse_langs(lang: str) -> list[str] | None:
-    """'all' / 'african' -> None (a preset); 'twi,en' -> ['twi', 'en']."""
-    if lang in (ALL_LANGS, ALL_AFRICAN):
+    """'all' -> None; 'twi,yor' -> ['twi', 'yor']."""
+    if lang == ALL_LANGS:
         return None
     codes = list(dict.fromkeys(c.strip() for c in lang.split(",") if c.strip()))
     known = {x["code"] for x in _languages()}
@@ -127,26 +138,39 @@ def parse_langs(lang: str) -> list[str] | None:
     return codes
 
 
+def resolve_pool(lang: str, hr: bool) -> tuple[list[str] | None, set[str], dict[str, str]]:
+    """(selected codes or None for all, languages scored, companions added {lang: companion})."""
+    langs = {x["code"]: x for x in _languages()}
+    african = {c for c, x in langs.items() if x["group"] == "african"}
+    codes = parse_langs(lang)
+    if codes is None:
+        return None, set(langs) if hr else african, {}
+    if not hr:
+        picked = [c for c in codes if c in african]
+        return picked, set(picked), {}
+    added = {c: COMPANIONS[c] for c in codes if c in COMPANIONS and COMPANIONS[c] in langs}
+    return codes, set(codes) | set(added.values()), added
+
+
 @router.get("/ranking")
-def ranking(lang: str = ALL_LANGS) -> dict:
-    """Rank tokenizers on one language, a custom set ("twi,en"), every language ("all") or
-    the African languages ("african").
-    Several languages: each counts equally (mean of per-language values); per_lang holds
-    each selected language's tokens per word."""
+def ranking(lang: str = ALL_LANGS, hr: bool = True) -> dict:
+    """Rank tokenizers on every language ("all") or a custom set ("twi,yor"); hr: include
+    high-resource languages (in "all", and as each picked language's companion)."""
     per = _per_language()
     african = {x["code"] for x in _languages() if x["group"] == "african"}
-    codes = parse_langs(lang)
+    codes, pool, added = resolve_pool(lang, hr)
+    order = None if codes is None else list(dict.fromkeys(codes + list(added.values())))
+    base = {"lang": lang, "hr": hr, "langs": order, "companions": added,
+            "n_african": len(african), "n_langs": len(pool)}
     if per.empty:
-        return {"rows": [], "lang": lang, "n_african": len(african)}
-    every = {x["code"] for x in _languages()}
-    pool = set(codes) if codes is not None else (african if lang == ALL_AFRICAN else every)
+        return {"rows": [], **base}
     sel = per[per["lang"].isin(pool)]
     agg = sel.groupby("model", as_index=False).agg(
         fertility=("fertility", "mean"), bytes_per_token=("bytes_per_token", "mean"),
         unk_ratio=("unk_ratio", "mean"), parity=("parity", "mean"),
         n_langs=("lang", "nunique"))
     per_lang: dict[str, dict[str, float | None]] = {}
-    if codes is not None and len(codes) > 1:
+    if order is not None and len(order) > 1:
         for r in sel.itertuples(index=False):
             per_lang.setdefault(r.model, {})[r.lang] = _clean(r.fertility, 3)
     _, _, info = _tables()
@@ -164,14 +188,13 @@ def ranking(lang: str = ALL_LANGS) -> dict:
             "unk_ratio": _clean(r.unk_ratio, 4), "n_langs": int(r.n_langs),
         }
         if per_lang:
-            row["per_lang"] = {c: per_lang.get(r.model, {}).get(c) for c in codes or []}
+            row["per_lang"] = {c: per_lang.get(r.model, {}).get(c) for c in order or []}
         rows.append(row)
-    return {"rows": rows, "lang": lang, "langs": codes, "n_african": len(african),
-            "n_langs": len(pool)}
+    return {"rows": rows, **base}
 
 
 @router.get("/tokenizer")
-def tokenizer(name: str, lang: str = ALL_LANGS) -> dict:
+def tokenizer(name: str, lang: str = ALL_LANGS, hr: bool = True) -> dict:
     sums, parity, info = _tables()
     if sums.empty or name not in set(sums["model"]):
         raise HTTPException(404, f"unknown tokenizer {name!r}")
@@ -186,13 +209,8 @@ def tokenizer(name: str, lang: str = ALL_LANGS) -> dict:
                  "fertility": _clean(r.fertility, 3), "parity": _clean(r.parity, 3)}
                 for r in df.itertuples(index=False)]
 
-    codes = parse_langs(lang)
-    if codes is not None:
-        pool = mine[mine["lang"].isin(set(codes))]
-    elif lang == ALL_AFRICAN:
-        pool = african
-    else:
-        pool = mine
+    _, scored, _ = resolve_pool(lang, hr)
+    pool = mine[mine["lang"].isin(scored)]
     disp, org = _display(name)
     row = info[info["model"] == name].iloc[0]
     return {

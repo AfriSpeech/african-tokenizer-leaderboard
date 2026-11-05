@@ -1,0 +1,314 @@
+code,name,countries,companion,basis
+abn,Abua,NG,en,countries (population-weighted): NG→en
+ach,Acholi (Acoli),SS;UG,en,"countries (population-weighted): UG→en, SS→en"
+ada,Adangme,GH,en,countries (population-weighted): GH→en
+adh,Adhola,KE;UG,en,"countries (population-weighted): KE→en, UG→en"
+afr,Afrikaans,BW;MZ;NA;ZA;ZM;ZW,en,override: South Africa and Namibia
+aka,Akan,GH;TG,en,override: Ghana
+alz,Alur,CD;UG,fr,"countries (population-weighted): CD→fr, UG→en"
+amh,Amharic,DJ;ET,en,"countries (population-weighted): ET→en, DJ→fr"
+ann,Obolo,NG,en,countries (population-weighted): NG→en
+anu,Anuak,ET;SS,en,"countries (population-weighted): ET→en, SS→en"
+apd,"Arabic, Sudanese",CF;EG;ER;ET;LY;SD;TD,ar,override: Sudanese Arabic: Arabic
+ary,Moroccan Arabic,DZ;EH;MA,ar,override: Moroccan Arabic: Arabic
+asg,Cishingini,BJ;NG,en,"countries (population-weighted): NG→en, BJ→fr"
+bba,Baatonum,BJ;NG,en,"countries (population-weighted): NG→en, BJ→fr"
+bci,Baoulé,CI,fr,countries (population-weighted): CI→fr
+bem,Bemba (Zambia),BW;CD;MW;ZM,fr,"countries (population-weighted): CD→fr, MW→en, ZM→en, BW→en"
+beq,Beembe (Congo),CG,fr,countries (population-weighted): CG→fr
+bex,Jur Modo,SS,en,countries (population-weighted): SS→en
+bez,Bena (Tanzania),TZ,en,countries (population-weighted): TZ→en
+bfa,Bari,SS;UG,en,"countries (population-weighted): UG→en, SS→en"
+bim,Bimoba,GH;TG,en,"countries (population-weighted): GH→en, TG→fr"
+bin,Edo,NG,en,countries (population-weighted): NG→en
+bjv,Bedjond,TD,fr,countries (population-weighted): TD→fr
+bkv,Bekwarra,NG,en,countries (population-weighted): NG→en
+bky,Bokyi,CM;NG,en,"countries (population-weighted): NG→en, CM→fr"
+bng,Bɛŋga,GA;GQ,fr,"countries (population-weighted): GA→fr, GQ→es (close; review)"
+bni,Bangi,CD;CF;CG,fr,"countries (population-weighted): CD→fr, CG→fr, CF→fr"
+bom,Berom,NG,en,countries (population-weighted): NG→en
+bqc,Boko (Benin),BJ;NG,en,"countries (population-weighted): NG→en, BJ→fr"
+bqp,Busa,NG,en,countries (population-weighted): NG→en
+bsp,Baga Sitemu,GN,fr,countries (population-weighted): GN→fr
+bsq,Bassa,LR;SL,en,"countries (population-weighted): SL→en, LR→en"
+bsw,Baiso,ET,en,countries (population-weighted): ET→en
+bud,Ntcham,GH;TG,en,"countries (population-weighted): GH→en, TG→fr"
+bum,Bulu (Cameroon),CM,fr,countries (population-weighted): CM→fr
+bus,Bokobaru,BJ;NG,en,"countries (population-weighted): NG→en, BJ→fr"
+buu,Budu,CD,fr,countries (population-weighted): CD→fr
+bwr,Bura-Pabir,NG,en,countries (population-weighted): NG→en
+bwu,Buli (Ghana),GH,en,countries (population-weighted): GH→en
+bxk,Bukusu,KE;UG,en,"countries (population-weighted): KE→en, UG→en"
+byv,Medumba,CM,fr,countries (population-weighted): CM→fr
+bzw,Basa,NG,en,countries (population-weighted): NG→en
+cce,Chopi,MZ,pt,countries (population-weighted): MZ→pt
+cjk,Chokwe,AO;CD;NA;ZM,fr,"countries (population-weighted): CD→fr, AO→pt, ZM→en, NA→en"
+crs,Seselwa Creole French,SC,fr,countries (population-weighted): SC→fr
+cwe,Kwere,TZ,en,countries (population-weighted): TZ→en
+dag,Dagbani,GH;TG,en,"countries (population-weighted): GH→en, TG→fr"
+dav,Taita,KE;TZ,en,"countries (population-weighted): TZ→en, KE→en"
+dga,Southern Dagaare,BF;GH,en,"countries (population-weighted): GH→en, BF→fr (close; review)"
+dgi,"Dagara, Northern",BF;GH,en,"countries (population-weighted): GH→en, BF→fr (close; review)"
+did,Didinga,SS;UG,en,"countries (population-weighted): UG→en, SS→en"
+dig,Chidigo,KE;TZ,en,"countries (population-weighted): TZ→en, KE→en"
+dip,Northeastern Dinka,SD;SS,ar,"countries (population-weighted): SD→ar, SS→en"
+dne,Ndendeule,TZ,en,countries (population-weighted): TZ→en
+drs,Gedeo,ET,en,countries (population-weighted): ET→en
+dwr,Dawro,ET,en,countries (population-weighted): ET→en
+dyi,Djimini Senoufo,CI,fr,countries (population-weighted): CI→fr
+dyu,Dyula,BF;CI;ML,fr,"countries (population-weighted): CI→fr, BF→fr, ML→fr"
+ebu,Embu,KE,en,countries (population-weighted): KE→en
+efi,Efik,CM;NG,en,"countries (population-weighted): NG→en, CM→fr"
+eka,Ekajuk,NG,en,countries (population-weighted): NG→en
+eko,Koti,MZ,pt,countries (population-weighted): MZ→pt
+ewe,Éwé,GH;TG,en,"countries (population-weighted): GH→en, TG→fr"
+eza,Ezaa,NG,en,countries (population-weighted): NG→en
+fat,Fanti,,en,override: Ghana (no country in the metadata)
+ffm,Maasina Fulfulde,BF;CI;GH;ML;MR;NE,fr,"countries (population-weighted): GH→en, CI→fr, NE→fr, BF→fr, ML→fr, MR→ar"
+flr,Fuliiru,BI;CD,fr,"countries (population-weighted): CD→fr, BI→fr"
+fon,Fon,BJ;TG,fr,"countries (population-weighted): BJ→fr, TG→fr"
+fub,Adamawa Fulfulde,CM;ER;ET;NG;SD;TD,en,"countries (population-weighted): NG→en, ET→en, SD→ar, CM→fr, TD→fr, ER→en"
+fue,"Fulfulde, Borgu",BJ;NG,en,"countries (population-weighted): NG→en, BJ→fr"
+fuv,Fulani,CM;NG;TD,en,"countries (population-weighted): NG→en, CM→fr, TD→fr"
+gaa,Ga,GH,en,countries (population-weighted): GH→en
+gax,"Oromo, Arsi",ET;KE;SO,en,"countries (population-weighted): ET→en, KE→en, SO→ar"
+gaz,West Central Oromo,ET;SD,en,"countries (population-weighted): ET→en, SD→ar"
+gbr,Gbagyi,NG,en,countries (population-weighted): NG→en
+gej,Gen,BJ;TG,fr,"countries (population-weighted): BJ→fr, TG→fr"
+gid,Gidar,CM;TD,fr,"countries (population-weighted): CM→fr, TD→fr"
+giz,South Giziga,CM,fr,countries (population-weighted): CM→fr
+gjn,Gonja,GH,en,countries (population-weighted): GH→en
+gkp,Guinea Kpelle,GN;LR,fr,"countries (population-weighted): GN→fr, LR→en"
+gmv,Gamo,ET,en,countries (population-weighted): ET→en
+goa,Guro,CI,fr,countries (population-weighted): CI→fr
+gof,Gofa,ET,en,countries (population-weighted): ET→en
+gog,Gogo,TZ,en,countries (population-weighted): TZ→en
+gur,Farefare,BF;GH,en,"countries (population-weighted): GH→en, BF→fr (close; review)"
+guw,Gun,BJ;NG,en,"countries (population-weighted): NG→en, BJ→fr"
+gux,Gourmanchéma,BF;BJ;NE;TG,fr,"countries (population-weighted): NE→fr, BF→fr, BJ→fr, TG→fr"
+guz,Ekegusii,KE;TZ,en,"countries (population-weighted): TZ→en, KE→en"
+gwr,Gwere,UG,en,countries (population-weighted): UG→en
+gya,"Gbaya, Northwest",CF;CG;CM;NG,en,"countries (population-weighted): NG→en, CM→fr, CG→fr, CF→fr"
+hau,Hausa,BF;BJ;CM;NE;NG;TD,en,override: Mostly Nigeria (English); Niger is the minority
+hay,Haya,TZ;UG,en,"countries (population-weighted): TZ→en, UG→en"
+hdy,Hadiyya,ET,en,countries (population-weighted): ET→en
+her,Herero,AO;BW;NA,pt,"countries (population-weighted): AO→pt, BW→en, NA→en"
+ibb,Ibibio,NG,en,countries (population-weighted): NG→en
+ibo,Igbo,NG,en,countries (population-weighted): NG→en
+idu,Idoma,NG,en,countries (population-weighted): NG→en
+igb,Ebira,NG,en,countries (population-weighted): NG→en
+ige,Igede,NG,en,countries (population-weighted): NG→en
+igl,Igala,NG,en,countries (population-weighted): NG→en
+ijn,Kalabari,NG,en,countries (population-weighted): NG→en
+ikk,Ika,NG,en,countries (population-weighted): NG→en
+iqw,Ikwo,NG,en,countries (population-weighted): NG→en
+iri,Irigwe,NG,en,countries (population-weighted): NG→en
+irk,Iraqw,TZ,en,countries (population-weighted): TZ→en
+izz,Izii,NG,en,countries (population-weighted): NG→en
+jbn,Nafusi,LY;TN,ar,"countries (population-weighted): TN→ar, LY→ar"
+jit,Jita,TZ,en,countries (population-weighted): TZ→en
+jmc,Machame,TZ,en,countries (population-weighted): TZ→en
+jnj,Yemsa,ET,en,countries (population-weighted): ET→en
+kab,Kabyle,DZ,ar,countries (population-weighted): DZ→ar
+kam,Kamba (Kenya),KE,en,countries (population-weighted): KE→en
+kbo,Keliko,CD;SS;UG,fr,"countries (population-weighted): CD→fr, UG→en, SS→en"
+kbr,Kafa,ET,en,countries (population-weighted): ET→en
+kck,Kalanga,BW;ZA;ZW,en,"countries (population-weighted): ZA→en, ZW→en, BW→en"
+kdc,Kutu,TZ,en,countries (population-weighted): TZ→en
+kde,Makonde,MZ;TZ,en,"countries (population-weighted): TZ→en, MZ→pt"
+kdi,Kumam,UG,en,countries (population-weighted): UG→en
+kdj,Ng’akarimojong,KE;SS;UG,en,"countries (population-weighted): KE→en, UG→en, SS→en"
+kia,Kim,TD,fr,countries (population-weighted): TD→fr
+kik,Kikuyu,KE,en,countries (population-weighted): KE→en
+kin,Rwandan,BI;CD;RW;TZ;UG,en,"countries (population-weighted): CD→fr, TZ→en, UG→en, RW→en, BI→fr (close; review)"
+kln,Kalenjin,KE,en,countries (population-weighted): KE→en
+klu,Klao,LR;SL,en,"countries (population-weighted): SL→en, LR→en"
+kmb,Kimbundu,AO;CD,fr,"countries (population-weighted): CD→fr, AO→pt"
+knf,Mankanya,GW;SN,fr,"countries (population-weighted): SN→fr, GW→pt"
+knk,Kuranko,GN;SL,en,override: Mainly Sierra Leone
+kpz,Kupsapiiny,KE;UG,en,"countries (population-weighted): KE→en, UG→en"
+kqs,Kissi,GN;LR;SL,fr,"countries (population-weighted): GN→fr, SL→en, LR→en (close; review)"
+kri,Krio,GM;GN;SL;SN;US,en,override: Sierra Leone
+krs,Gbaya (South Sudan),CF;SD;SS,ar,"countries (population-weighted): SD→ar, SS→en, CF→fr"
+ksp,Kaba,CF;TD,fr,"countries (population-weighted): TD→fr, CF→fr"
+kss,Southern Kisi,GN;LR;SL,fr,"countries (population-weighted): GN→fr, SL→en, LR→en (close; review)"
+ktb,Kambaata,ET,en,countries (population-weighted): ET→en
+kua,Kuanyama,AO;NA,pt,"countries (population-weighted): AO→pt, NA→en"
+kub,Kutep,CM;NG,en,"countries (population-weighted): NG→en, CM→fr"
+kuj,Kuria,KE;TZ,en,"countries (population-weighted): TZ→en, KE→en"
+kus,Kusaal,BF;GH;TG,en,"countries (population-weighted): GH→en, BF→fr, TG→fr (close; review)"
+kvj,Psikye,CM;NG,en,"countries (population-weighted): NG→en, CM→fr"
+kwn,Kwangali,AO;NA,pt,"countries (population-weighted): AO→pt, NA→en"
+kxc,Konso,ET,en,countries (population-weighted): ET→en
+lai,Lambya,MW;TZ;ZM,en,"countries (population-weighted): TZ→en, MW→en, ZM→en"
+laj,Lango (Uganda),UG,en,countries (population-weighted): UG→en
+lam,Lamba,CD;ZM,fr,"countries (population-weighted): CD→fr, ZM→en"
+lap,Laka (Chad),CF;TD,fr,"countries (population-weighted): TD→fr, CF→fr"
+lef,Lelemi,GH;TG,en,"countries (population-weighted): GH→en, TG→fr"
+leh,Lenje,ZM,en,countries (population-weighted): ZM→en
+lgg,Lugbara,CD;UG,fr,"countries (population-weighted): CD→fr, UG→en"
+lin,Lingala,CD;CF;CG,fr,"countries (population-weighted): CD→fr, CG→fr, CF→fr"
+llb,ILolo,MW;MZ,pt,"countries (population-weighted): MZ→pt, MW→en (close; review)"
+lme,Pévé,CM;TD,fr,"countries (population-weighted): CM→fr, TD→fr"
+lns,Lamnso’,CM;NG,en,"countries (population-weighted): NG→en, CM→fr"
+lol,Mongo,CD,fr,countries (population-weighted): CD→fr
+lon,"Lomwe, Malawi",MW;MZ,en,override: Malawi Lomwe: Malawi
+lot,Otuho,SS;UG,en,"countries (population-weighted): UG→en, SS→en"
+loz,Lozi,BW;NA;ZM;ZW,en,"countries (population-weighted): ZM→en, ZW→en, BW→en, NA→en"
+lsm,Saamia,KE;UG,en,"countries (population-weighted): KE→en, UG→en"
+lto,Tsotso,KE,en,countries (population-weighted): KE→en
+lua,Luba-Lulua,AO;CD,fr,"countries (population-weighted): CD→fr, AO→pt"
+luc,Aringa,SS;UG,en,"countries (population-weighted): UG→en, SS→en"
+lue,Luvale,AO;ZM,pt,"countries (population-weighted): AO→pt, ZM→en"
+lug,Ganda,UG,en,countries (population-weighted): UG→en
+lun,Lunda,AO;CD;ZM,fr,"countries (population-weighted): CD→fr, AO→pt, ZM→en"
+luo,Luo (Kenya and Tanzania),KE;TZ,en,"countries (population-weighted): TZ→en, KE→en"
+lwg,Wanga,KE,en,countries (population-weighted): KE→en
+maf,Mafa,CM;NG,en,"countries (population-weighted): NG→en, CM→fr"
+mas,Masai,KE;TZ,en,"countries (population-weighted): TZ→en, KE→en"
+mbu,Mbula-Bwazza,NG,en,countries (population-weighted): NG→en
+mck,Mbunda,AO;ZM,pt,"countries (population-weighted): AO→pt, ZM→en"
+mcn,Masana,CM;TD,fr,"countries (population-weighted): CM→fr, TD→fr"
+mdy,Maale,ET,en,countries (population-weighted): ET→en
+mer,Kimîîru,KE,en,countries (population-weighted): KE→en
+mfe,Mauritian,MU,fr,countries (population-weighted): MU→fr
+mfg,Mogofin,GN,fr,countries (population-weighted): GN→fr
+mfn,"Mbembe, Cross River",NG,en,countries (population-weighted): NG→en
+mfx,Melo,ET,en,countries (population-weighted): ET→en
+mgh,Makhuwa-Meetto,MZ;TZ,en,"countries (population-weighted): TZ→en, MZ→pt"
+mgo,Meta',CM,fr,countries (population-weighted): CM→fr
+mgr,Mambwe (ichi-): Lungu,TZ;ZM,en,"countries (population-weighted): TZ→en, ZM→en"
+mgv,Matengo,TZ,en,countries (population-weighted): TZ→en
+mhw,Mbukushu,AO;BW;NA;ZM,en,override: Mainly Namibia
+mkl,Mokole,BJ,fr,countries (population-weighted): BJ→fr
+mkw,Kituba,CG,fr,countries (population-weighted): CG→fr
+mnk,Mandinka,GM;GN;GW;SN,fr,"countries (population-weighted): SN→fr, GN→fr, GM→en, GW→pt"
+mos,Mossi,BF;CI;GH;ML;TG,fr,"countries (population-weighted): GH→en, CI→fr, BF→fr, ML→fr, TG→fr"
+mpg,Marba,TD,fr,countries (population-weighted): TD→fr
+msc,Sankaran Maninka,GN;SL,fr,"countries (population-weighted): GN→fr, SL→en (close; review)"
+mse,Musey,CM;TD,fr,"countries (population-weighted): CM→fr, TD→fr"
+mua,Mundang,CM;TD,fr,"countries (population-weighted): CM→fr, TD→fr"
+mug,Mousgoum,CM;TD,fr,"countries (population-weighted): CM→fr, TD→fr"
+mwm,Sar,TD,fr,countries (population-weighted): TD→fr
+mwn,Nyamwanga,MW;TZ;ZM,en,"countries (population-weighted): TZ→en, MW→en, ZM→en"
+myb,Mbay,CF;NG;TD,en,"countries (population-weighted): NG→en, TD→fr, CF→fr"
+mye,Myene,GA,fr,countries (population-weighted): GA→fr
+myx,Masaaba,KE;UG,en,"countries (population-weighted): KE→en, UG→en"
+mzw,Deg,CI;GH,en,"countries (population-weighted): GH→en, CI→fr (close; review)"
+naq,Khoekhoe,BW;NA;ZA,en,"countries (population-weighted): ZA→en, BW→en, NA→en"
+nbl,South Ndebele,ZA,en,countries (population-weighted): ZA→en
+ndc,Ndau,MZ;ZW,pt,"countries (population-weighted): MZ→pt, ZW→en"
+nde,North Ndebele,BW;ZM;ZW,en,"countries (population-weighted): ZM→en, ZW→en, BW→en"
+ndo,Ndonga,AO;NA,pt,"countries (population-weighted): AO→pt, NA→en"
+nga,Ngbaka,CD;CF;CG,fr,"countries (population-weighted): CD→fr, CG→fr, CF→fr"
+ngc,Ngombe (Democratic Republic of Congo),CD;CF,fr,"countries (population-weighted): CD→fr, CF→fr"
+ngl,Lomwe,MW;MZ,pt,"countries (population-weighted): MZ→pt, MW→en (close; review)"
+ngp,Ngulu,TZ,en,countries (population-weighted): TZ→en
+nih,"Nyiha, Tanzania",MW;TZ;ZM,en,"countries (population-weighted): TZ→en, MW→en, ZM→en"
+nka,Nkoya,ZM,en,countries (population-weighted): ZM→en
+nkn,Nkangala,AO,pt,countries (population-weighted): AO→pt
+nko,Nkonya,GH,en,countries (population-weighted): GH→en
+nle,Nyala,KE,en,countries (population-weighted): KE→en
+nnb,Kinandi (Ndandi),CD;UG,fr,"countries (population-weighted): CD→fr, UG→en"
+nnh,Ngiemboon,CM,fr,countries (population-weighted): CM→fr
+nse,Nsenga,MZ;ZM;ZW,en,"countries (population-weighted): MZ→pt, ZM→en, ZW→en (close; review)"
+nso,"Sotho, Northern",BW;ZA,en,"countries (population-weighted): ZA→en, BW→en"
+nuj,Nyole,UG,en,countries (population-weighted): UG→en
+nus,Nuer,ET;SS,en,"countries (population-weighted): ET→en, SS→en"
+nya,Nyanja,MW;MZ;SZ;TZ;ZM;ZW,en,"countries (population-weighted): TZ→en, MZ→pt, MW→en, ZM→en, ZW→en, SZ→en"
+nyd,Nyore,KE,en,countries (population-weighted): KE→en
+nym,Nyamwezi,TZ,en,countries (population-weighted): TZ→en
+nyn,Nyankole,RW;TZ;UG,en,"countries (population-weighted): TZ→en, UG→en, RW→en"
+nyo,Nyoro,UG,en,countries (population-weighted): UG→en
+nyu,Nyungwe,MW;MZ;ZW,pt,"override: Nyungwe: Tete, Mozambique"
+nyy,Nyakyusa-Ngonde,MW;TZ,en,"countries (population-weighted): TZ→en, MW→en"
+nzi,Nzima,CI;GH,en,"countries (population-weighted): GH→en, CI→fr (close; review)"
+okr,Kirike,NG,en,countries (population-weighted): NG→en
+old,Mochi,TZ,en,countries (population-weighted): TZ→en
+oyd,Oyda,ET,en,countries (population-weighted): ET→en
+ozm,Koonzime,CM,fr,countries (population-weighted): CM→fr
+pcm,"Pidgin, Nigerian",NG,en,countries (population-weighted): NG→en
+pfe,Peere,CM;NG,en,"countries (population-weighted): NG→en, CM→fr"
+pko,Pökoot,KE;UG,en,"countries (population-weighted): KE→en, UG→en"
+plt,Malgache,MG,fr,countries (population-weighted): MG→fr
+pov,"Crioulo, Upper Guinea",GM;GW;SN;US,fr,"countries (population-weighted): SN→fr, GM→en, GW→pt, US→?"
+poy,Pogolo,TZ,en,countries (population-weighted): TZ→en
+puu,Punu (Ipounou),CG;GA,fr,"countries (population-weighted): CG→fr, GA→fr"
+rag,Lulogooli,KE;TZ,en,"countries (population-weighted): TZ→en, KE→en"
+rif,Tarifit,DZ;ES;MA,ar,"countries (population-weighted): DZ→ar, MA→ar, ES→?"
+rub,Gungu,UG,en,countries (population-weighted): UG→en
+ruf,Luguru,TZ,en,countries (population-weighted): TZ→en
+run,Rundi,BI;CD;RW;TZ;UG,fr,override: Burundi
+sag,Sango,CD;CF;CG;TD,fr,"countries (population-weighted): CD→fr, TD→fr, CG→fr, CF→fr"
+sav,Saafi-Saafi,SN,fr,countries (population-weighted): SN→fr
+sba,Ngambay,CM;NG;TD,en,"countries (population-weighted): NG→en, CM→fr, TD→fr"
+sbd,"Samo, Southern",BF,fr,countries (population-weighted): BF→fr
+sef,"Sénoufo, Cebaara",BF;CI;ML,fr,"countries (population-weighted): CI→fr, BF→fr, ML→fr"
+ses,Koyraboro Senni Songhai,ML;NE,fr,"countries (population-weighted): NE→fr, ML→fr"
+sev,"Sénoufo, Nyarafolo",CI,fr,countries (population-weighted): CI→fr
+sfw,Sehwi,CI;GH,en,"countries (population-weighted): GH→en, CI→fr (close; review)"
+sgw,Sebat Bet Gurage,ET,en,countries (population-weighted): ET→en
+shi,Tashelhayt,DZ;MA,ar,"countries (population-weighted): DZ→ar, MA→ar"
+shk,Shilluk,SD;SS,ar,"countries (population-weighted): SD→ar, SS→en"
+shr,Shi,BI;CD;RW,fr,"countries (population-weighted): CD→fr, RW→en, BI→fr"
+shu,Chadian Arabic,CM;NE;NG;TD,ar,override: Chadian Arabic: Arabic
+sid,Sidamo,ET,en,countries (population-weighted): ET→en
+sil,"Sisaala, Tumulung",GH,en,countries (population-weighted): GH→en
+sna,Shona,BW;ZA;ZM;ZW,en,"countries (population-weighted): ZA→en, ZM→en, ZW→en, BW→en"
+snw,Selee,GH,en,countries (population-weighted): GH→en
+som,Somali,DJ;ET;KE;SO,en,override: English dominates Somali written and digital use (Arabic is co-official)
+sot,Southern Sotho,LS;ZA,en,"countries (population-weighted): ZA→en, LS→en"
+srr,Serer (Senegal),GM;SN,fr,"countries (population-weighted): SN→fr, GM→en"
+ssw,Swazi,LS;MZ;SZ;ZA,en,"countries (population-weighted): ZA→en, MZ→pt, LS→en, SZ→en"
+suk,Sukuma,TZ,en,countries (population-weighted): TZ→en
+sus,Susu (Roman script),GN;GW;SL;SN,fr,"countries (population-weighted): SN→fr, GN→fr, SL→en, GW→pt"
+swc,Congo Swahili,CD,fr,countries (population-weighted): CD→fr
+swh,Swahili,BI;KE;MZ;RW;SO;TZ;UG,en,override: East African lingua franca; English in all its main countries
+swk,Sena (Malawi),MW;MZ,en,override: Malawi Sena: Malawi
+tcc,Datooga,TZ,en,countries (population-weighted): TZ→en
+teo,Teso,KE;UG,en,"countries (population-weighted): KE→en, UG→en"
+tex,Tennet,SS,en,countries (population-weighted): SS→en
+tgw,"Sénoufo, Tagwana",CI,fr,countries (population-weighted): CI→fr
+tir,Tigrinya,DJ;ER;ET;SD,en,"countries (population-weighted): ET→en, SD→ar, ER→en, DJ→fr"
+tiv,Tiv,CM;NG,en,"countries (population-weighted): NG→en, CM→fr"
+tke,Takwane,MW;MZ,pt,"countries (population-weighted): MZ→pt, MW→en (close; review)"
+tlj,Talinga-Bwisi,CD;UG,fr,"countries (population-weighted): CD→fr, UG→en"
+tll,Tetela,CD,fr,countries (population-weighted): CD→fr
+tod,Toma,GN;LR,fr,"countries (population-weighted): GN→fr, LR→en"
+tog,Tonga (Nyasa),MW,en,countries (population-weighted): MW→en
+toh,Gitonga,MZ,pt,countries (population-weighted): MZ→pt
+toi,Tonga (Zambia),NA;ZM;ZW,en,"countries (population-weighted): ZM→en, ZW→en, NA→en"
+tsc,Tswa,MZ;ZA;ZW,en,"countries (population-weighted): ZA→en, MZ→pt, ZW→en"
+tsn,Setswana,BW;NA;ZA;ZM;ZW,en,"countries (population-weighted): ZA→en, ZM→en, ZW→en, BW→en, NA→en"
+tso,Tsonga,MZ;SZ;ZA;ZW,en,"countries (population-weighted): ZA→en, MZ→pt, ZW→en, SZ→en"
+tsw,Tsishingini,NG,en,countries (population-weighted): NG→en
+ttq,Tuareg,BF;ML;NE;NG,en,"countries (population-weighted): NG→en, NE→fr, BF→fr, ML→fr"
+tui,Tupuri,CM;TD,fr,"countries (population-weighted): CM→fr, TD→fr"
+tum,Tumbuka,MW;ZM,en,"countries (population-weighted): MW→en, ZM→en"
+tuv,Turkana,ET;KE;SS;UG,en,"countries (population-weighted): ET→en, KE→en, UG→en, SS→en"
+tvs,Taveta,KE;TZ,en,"countries (population-weighted): TZ→en, KE→en"
+twi,Twi,,en,override: Ghana (no country in the metadata)
+udu,Uduk,ET;SD;SS,en,"countries (population-weighted): ET→en, SD→ar, SS→en"
+umb,Umbundu,AO;NA,pt,"countries (population-weighted): AO→pt, NA→en"
+urh,Urhobo,NG,en,countries (population-weighted): NG→en
+vag,Vagla,GH,en,countries (population-weighted): GH→en
+ven,Venda,BW;ZA;ZW,en,"countries (population-weighted): ZA→en, ZW→en, BW→en"
+vid,Vidunda,TZ,en,countries (population-weighted): TZ→en
+vmk,Makhuwa-Shirima,MW;MZ,pt,"countries (population-weighted): MZ→pt, MW→en (close; review)"
+wal,Wolaytta,ET,en,countries (population-weighted): ET→en
+wmw,Mwani,MZ,pt,countries (population-weighted): MZ→pt
+wol,Wolof (Senegal),GM;GW;ML;MR;SN,fr,"countries (population-weighted): ML→fr, SN→fr, MR→ar, GM→en, GW→pt"
+xed,Hdi,CM;NG,en,"countries (population-weighted): NG→en, CM→fr"
+xho,Xhosa,BW;LS;ZA,en,"countries (population-weighted): ZA→en, BW→en, LS→en"
+xog,Soga,UG,en,countries (population-weighted): UG→en
+xon,Konkomba,GH;TG,en,"countries (population-weighted): GH→en, TG→fr"
+xpe,Liberia Kpelle,GN;LR,fr,"countries (population-weighted): GN→fr, LR→en"
+xsm,Kasem,BF;GH,en,"countries (population-weighted): GH→en, BF→fr (close; review)"
+yal,Yalunka,GN;ML;SL;SN,fr,"countries (population-weighted): ML→fr, SN→fr, GN→fr, SL→en"
+yao,Yao,MW;MZ;TZ;ZM,en,"countries (population-weighted): TZ→en, MZ→pt, MW→en, ZM→en"
+yom,Yombe,AO;CD;CG,fr,"countries (population-weighted): CD→fr, AO→pt, CG→fr"
+yor,Yoruba,BJ;NG,en,"countries (population-weighted): NG→en, BJ→fr"
+zaj,Zaramo - Zalamo,TZ,en,countries (population-weighted): TZ→en
+zga,Kinga,MW;TZ,en,"countries (population-weighted): TZ→en, MW→en"
+zne,Zande,CD;CF;SS,fr,"countries (population-weighted): CD→fr, SS→en, CF→fr"
+zul,Zulu,BW;LS;MZ;SZ;ZA,en,"countries (population-weighted): ZA→en, MZ→pt, BW→en, LS→en, SZ→en"

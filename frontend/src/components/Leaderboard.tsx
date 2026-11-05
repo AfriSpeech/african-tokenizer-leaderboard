@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
-import type { LanguagesResponse, RankBy, RankingRow, TokenizerDetail } from '../types'
+import type { LanguagesResponse, RankBy, RankingResponse, RankingRow, TokenizerDetail } from '../types'
 import { api } from '../api'
-import LanguagePicker, { AFRICAN, ALL } from './LanguagePicker'
+import LanguagePicker, { ALL } from './LanguagePicker'
 
 const RANK_BY: { id: RankBy; label: string; lowerIsBetter: boolean }[] = [
   { id: 'fertility', label: 'Tokens per word (lower is better)', lowerIsBetter: true },
@@ -13,7 +13,7 @@ const PAGE_SIZE = 25
 const fmt = (v: number | null, d = 2) => (v == null ? '—' : v.toFixed(d))
 const fmtInt = (v: number | null) => (v == null ? '—' : v.toLocaleString('en-US'))
 
-const MAX_LANG_COLUMNS = 4
+const MAX_LANG_COLUMNS = 5
 
 function readParams() {
   const p = new URLSearchParams(window.location.hash.split('?')[1] ?? '')
@@ -21,6 +21,7 @@ function readParams() {
   return {
     langs: lang.split(',').filter(Boolean),
     by: (p.get('by') ?? 'fertility') as RankBy,
+    hr: p.get('hr') !== '0',
   }
 }
 
@@ -28,36 +29,37 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
   const initial = readParams()
   const [langs, setLangs] = useState<string[]>(initial.langs)
   const [rankBy, setRankBy] = useState<RankBy>(initial.by)
-  const [rows, setRows] = useState<RankingRow[] | null>(null)
+  const [hr, setHr] = useState(initial.hr)
+  const [result, setResult] = useState<RankingResponse | null>(null)
+  const rows: RankingRow[] | null = result?.rows ?? null
   const [error, setError] = useState<string | null>(null)
   const [showAll, setShowAll] = useState(false)
   const [open, setOpen] = useState<string | null>(null)
 
   const isAll = langs.length === 1 && langs[0] === ALL
-  const isAfrican = langs.length === 1 && langs[0] === AFRICAN
   const lang = langs.join(',')
-  const custom = langs.length > 0 && !isAll && !isAfrican
-  const selected = custom
-    ? langs.map((c) => info?.languages.find((l) => l.code === c)).filter((l) => l != null)
-    : []
-  const langColumns = custom && langs.length > 1 && langs.length <= MAX_LANG_COLUMNS ? selected : []
+  const byCode = (c: string) => info?.languages.find((l) => l.code === c)
+  // Languages actually scored (picked + companions), as the server resolved them.
+  const scored = (result?.langs ?? []).map(byCode).filter((l) => l != null)
+  const langColumns = scored.length > 1 && scored.length <= MAX_LANG_COLUMNS ? scored : []
+  const companions = Object.entries(result?.companions ?? {})
 
   useEffect(() => {
-    const params = new URLSearchParams({ lang, by: rankBy })
+    const params = new URLSearchParams({ lang, by: rankBy, ...(hr ? {} : { hr: '0' }) })
     history.replaceState(null, '', `#/leaderboard?${params}`)
-  }, [lang, rankBy])
+  }, [lang, rankBy, hr])
 
   useEffect(() => {
     const ctrl = new AbortController()
-    setRows(null)
+    setResult(null)
     setError(null)
     setOpen(null)
     if (!lang) return
-    api.ranking(lang, ctrl.signal)
-      .then((r) => setRows(r.rows))
+    api.ranking(lang, hr, ctrl.signal)
+      .then(setResult)
       .catch((e: Error) => { if (e.name !== 'AbortError') setError(e.message) })
     return () => ctrl.abort()
-  }, [lang])
+  }, [lang, hr])
 
   const metric = RANK_BY.find((m) => m.id === rankBy)!
   const sorted = useMemo(() => {
@@ -73,15 +75,14 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
 
   const maxFert = Math.max(...(sorted ?? []).map((r) => r.fertility ?? 0), 1)
   const visible = sorted ? (showAll ? sorted : sorted.slice(0, PAGE_SIZE)) : null
+  const nLangs = result?.n_langs
   const title = !langs.length
     ? 'No languages selected'
     : isAll
-      ? `All languages${info ? ` (${info.languages.length})` : ''}`
-    : isAfrican
-      ? `All African languages${info ? ` (${info.n_african})` : ''}`
-        : langs.length <= MAX_LANG_COLUMNS
-          ? selected.map((l) => l.name).join(' + ')
-          : `${langs.length} languages`
+      ? `${hr ? 'All languages' : 'All African languages'}${nLangs ? ` (${nLangs})` : ''}`
+      : scored.length && scored.length <= MAX_LANG_COLUMNS
+        ? scored.map((l) => l.name).join(' + ')
+        : `${nLangs ?? langs.length} languages`
 
   return (
     <>
@@ -97,7 +98,7 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
         {info ? (
           <LanguagePicker
             languages={info.languages}
-            nAfrican={info.n_african}
+            includeHighResource={hr}
             value={langs}
             onChange={setLangs}
           />
@@ -110,12 +111,37 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
             {RANK_BY.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
           </select>
         </div>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={hr}
+            onChange={(e) => {
+              setHr(e.target.checked)
+              if (!e.target.checked) {
+                const african = langs.filter((c) => c === ALL || byCode(c)?.group === 'african')
+                if (african.length !== langs.length) setLangs(african.length ? african : [ALL])
+              }
+            }}
+          />
+          <span>
+            Include high-resource languages
+            <span className="field-hint">English, French, Arabic, Portuguese, Spanish</span>
+          </span>
+        </label>
       </section>
 
       <div className="table-head">
         <h2>{title}{lang && <> · {sorted ? `${sorted.length} tokenizers` : 'loading…'}</>}</h2>
       </div>
 
+      {companions.length > 0 && (
+        <p className="companion-note">
+          Ranked with the high-resource language each one is mainly used alongside:{' '}
+          {companions.map(([c, comp], i) => (
+            <span key={c}>{i > 0 && ', '}{byCode(c)?.name ?? c} + {byCode(comp)?.name ?? comp}</span>
+          ))}. Untick “Include high-resource languages” to score African languages alone.
+        </p>
+      )}
       {error && <div className="notice error" role="alert">{error}</div>}
       {!lang && (
         <div className="notice info" role="status">
@@ -131,7 +157,7 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
             <tr>
               <th scope="col" style={{ width: 48 }}>#</th>
               <th scope="col">Tokenizer</th>
-              <th scope="col" style={{ width: 260 }}>{custom && langs.length === 1 ? 'Tokens / word ↓' : 'Avg tokens / word ↓'}</th>
+              <th scope="col" style={{ width: 260 }}>{scored.length === 1 ? 'Tokens / word ↓' : 'Avg tokens / word ↓'}</th>
               {langColumns.map((l) => <th key={l.code} scope="col" className="lang-col">{l.name}</th>)}
               <th scope="col" className="num">Parity vs EN ↓</th>
               <th scope="col" className="num">Bytes / token ↑</th>
@@ -170,7 +196,7 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
                   <td className="num mono muted">{fmtInt(r.vocab_size)}</td>
                 </tr>
                 {open === r.model && (
-                  <tr><td colSpan={6 + langColumns.length} style={{ padding: 0 }}><Detail model={r.model} lang={lang} /></td></tr>
+                  <tr><td colSpan={6 + langColumns.length} style={{ padding: 0 }}><Detail model={r.model} lang={lang} hr={hr} /></td></tr>
                 )}
               </Fragment>
             ))}
@@ -204,12 +230,12 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
   )
 }
 
-function Detail({ model, lang }: { model: string; lang: string }) {
+function Detail({ model, lang, hr }: { model: string; lang: string; hr: boolean }) {
   const [d, setD] = useState<TokenizerDetail | null>(null)
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
-    api.tokenizer(model, lang).then(setD).catch((e: Error) => setError(e.message))
-  }, [model, lang])
+    api.tokenizer(model, lang, hr).then(setD).catch((e: Error) => setError(e.message))
+  }, [model, lang, hr])
   if (error) return <div className="detail"><div className="notice error">{error}</div></div>
   if (!d) return <div className="detail"><div className="skeleton" style={{ width: '40%' }} /></div>
   const isLocal = model.startsWith('tokenizers/')

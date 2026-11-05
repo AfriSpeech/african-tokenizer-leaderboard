@@ -27,11 +27,11 @@ const q = (params: Record<string, string>) => new URLSearchParams(params).toStri
 export const api = {
   languages: () => request<LanguagesResponse>('/api/v2/languages'),
 
-  ranking: (lang: string, signal?: AbortSignal) =>
-    request<RankingResponse>(`/api/v2/ranking?${q({ lang })}`, { signal }),
+  ranking: (lang: string, hr: boolean, signal?: AbortSignal) =>
+    request<RankingResponse>(`/api/v2/ranking?${q({ lang, hr: hr ? 'true' : 'false' })}`, { signal }),
 
-  tokenizer: (name: string, lang: string) =>
-    request<TokenizerDetail>(`/api/v2/tokenizer?${q({ name, lang })}`),
+  tokenizer: (name: string, lang: string, hr: boolean) =>
+    request<TokenizerDetail>(`/api/v2/tokenizer?${q({ name, lang, hr: hr ? 'true' : 'false' })}`),
 
   compare: (text: string, a: string, b: string) =>
     post<CompareResponse>('/api/battle/tokenize', {

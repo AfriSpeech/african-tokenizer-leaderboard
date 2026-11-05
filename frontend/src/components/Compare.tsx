@@ -22,7 +22,7 @@ export default function Compare() {
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    api.ranking('all').then((r) => {
+    api.ranking('all', true).then((r) => {
       setModels(r.rows)
       setA(r.rows.find((x) => x.model.includes('en-twi'))?.model ?? r.rows[0]?.model ?? '')
       setB(r.rows.find((x) => x.model.includes('gpt-4o'))?.model ?? r.rows[1]?.model ?? '')
