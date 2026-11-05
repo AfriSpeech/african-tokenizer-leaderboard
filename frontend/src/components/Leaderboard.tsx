@@ -3,13 +3,6 @@ import type { LanguagesResponse, RankBy, RankingRow, TokenizerDetail } from '../
 import { api } from '../api'
 import LanguagePicker, { AFRICAN, ALL } from './LanguagePicker'
 
-const DOMAINS: { id: string; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'bible', label: 'Bible' },
-  { id: 'watchtower', label: 'Watchtower' },
-  { id: 'web', label: 'Web' },
-]
-
 const RANK_BY: { id: RankBy; label: string; lowerIsBetter: boolean }[] = [
   { id: 'fertility', label: 'Tokens per word (lower is better)', lowerIsBetter: true },
   { id: 'parity', label: 'Parity vs English (lower is better)', lowerIsBetter: true },
@@ -27,7 +20,6 @@ function readParams() {
   const lang = p.get('lang') ?? ALL
   return {
     langs: lang.split(',').filter(Boolean),
-    domain: p.get('domain') ?? 'all',
     by: (p.get('by') ?? 'fertility') as RankBy,
   }
 }
@@ -35,7 +27,6 @@ function readParams() {
 export default function Leaderboard({ langs: info }: { langs: LanguagesResponse | null }) {
   const initial = readParams()
   const [langs, setLangs] = useState<string[]>(initial.langs)
-  const [domain, setDomain] = useState(initial.domain)
   const [rankBy, setRankBy] = useState<RankBy>(initial.by)
   const [rows, setRows] = useState<RankingRow[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -49,16 +40,12 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
   const selected = custom
     ? langs.map((c) => info?.languages.find((l) => l.code === c)).filter((l) => l != null)
     : []
-  // A domain is offered when every selected language has text in it.
-  const availableDomains = custom
-    ? new Set(DOMAINS.map((d) => d.id).filter((d) => selected.every((l) => l.domains.includes(d))))
-    : null
   const langColumns = custom && langs.length > 1 && langs.length <= MAX_LANG_COLUMNS ? selected : []
 
   useEffect(() => {
-    const params = new URLSearchParams({ lang, domain, by: rankBy })
+    const params = new URLSearchParams({ lang, by: rankBy })
     history.replaceState(null, '', `#/leaderboard?${params}`)
-  }, [lang, domain, rankBy])
+  }, [lang, rankBy])
 
   useEffect(() => {
     const ctrl = new AbortController()
@@ -66,11 +53,11 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
     setError(null)
     setOpen(null)
     if (!lang) return
-    api.ranking(lang, domain, ctrl.signal)
+    api.ranking(lang, ctrl.signal)
       .then((r) => setRows(r.rows))
       .catch((e: Error) => { if (e.name !== 'AbortError') setError(e.message) })
     return () => ctrl.abort()
-  }, [lang, domain])
+  }, [lang])
 
   const metric = RANK_BY.find((m) => m.id === rankBy)!
   const sorted = useMemo(() => {
@@ -95,7 +82,6 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
         : langs.length <= MAX_LANG_COLUMNS
           ? selected.map((l) => l.name).join(' + ')
           : `${langs.length} languages`
-  const domainLabel = DOMAINS.find((d) => d.id === domain)?.label.toLowerCase() ?? domain
 
   return (
     <>
@@ -113,35 +99,11 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
             languages={info.languages}
             nAfrican={info.n_african}
             value={langs}
-            onChange={(codes) => {
-              setLangs(codes)
-              const sel = codes.filter((c) => c !== ALL && c !== AFRICAN)
-                .map((c) => info.languages.find((x) => x.code === c))
-              if (domain !== 'all' && sel.some((l) => !l?.domains.includes(domain))) setDomain('all')
-            }}
+            onChange={setLangs}
           />
         ) : (
-          <div className="field picker"><span className="field-label">Language</span><div className="skeleton" style={{ height: 44 }} /></div>
+          <div className="field picker"><span className="field-label">Languages</span><div className="skeleton" style={{ height: 44 }} /></div>
         )}
-        <div className="field">
-          <span className="field-label" id="domain-label">Text domain</span>
-          <div className="segmented" role="group" aria-labelledby="domain-label">
-            {DOMAINS.map((d) => {
-              const disabled = d.id !== 'all' && availableDomains !== null && !availableDomains.has(d.id)
-              return (
-                <button
-                  key={d.id}
-                  aria-pressed={domain === d.id}
-                  disabled={disabled}
-                  title={disabled ? `No ${d.label} text for this language` : undefined}
-                  onClick={() => setDomain(d.id)}
-                >
-                  {d.label}
-                </button>
-              )
-            })}
-          </div>
-        </div>
         <div className="field">
           <label htmlFor="rank-by" className="field-label">Rank by</label>
           <select id="rank-by" className="select" value={rankBy} onChange={(e) => setRankBy(e.target.value as RankBy)}>
@@ -151,7 +113,7 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
       </section>
 
       <div className="table-head">
-        <h2>{title}{lang && <> · {domainLabel === 'all' ? 'all domains' : domainLabel} · {sorted ? `${sorted.length} tokenizers` : 'loading…'}</>}</h2>
+        <h2>{title}{lang && <> · {sorted ? `${sorted.length} tokenizers` : 'loading…'}</>}</h2>
       </div>
 
       {error && <div className="notice error" role="alert">{error}</div>}
@@ -216,7 +178,7 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
         </table>
       </div>
       <div className="table-foot">
-        <span>Click a row for per-domain scores and its best and worst languages.</span>
+        <span>Click a row for its summary and its best and hardest African languages.</span>
         {sorted && sorted.length > PAGE_SIZE && (
           <button className="link-button" onClick={() => setShowAll(!showAll)}>
             {showAll ? 'Show top 25' : `Show all ${sorted.length} tokenizers`}
@@ -255,11 +217,11 @@ function Detail({ model, lang }: { model: string; lang: string }) {
     <div className="detail">
       <div className="detail-grid">
         <div>
-          <h3>Tokens per word by domain</h3>
+          <h3>{d.n_langs === 1 ? 'On this language' : `Across ${d.n_langs} languages`}</h3>
           <ul>
-            {d.domains.map((x) => (
-              <li key={x.domain}><span style={{ textTransform: 'capitalize' }}>{x.domain}</span><span className="mono">{fmt(x.fertility)}</span></li>
-            ))}
+            <li><span>Tokens per word</span><span className="mono">{fmt(d.fertility)}</span></li>
+            <li><span>Parity vs English</span><span className="mono">{fmt(d.parity)}</span></li>
+            <li><span>Bytes per token</span><span className="mono">{fmt(d.bytes_per_token, 1)}</span></li>
           </ul>
           <p className="muted" style={{ fontSize: 13, margin: '12px 0 0' }}>
             {isLocal ? model.replace('tokenizers/', '') : <a href={`https://huggingface.co/${model}`} target="_blank" rel="noreferrer">{model}</a>}

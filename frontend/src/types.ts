@@ -4,14 +4,12 @@ export interface Language {
   code: string
   name: string
   group: 'african' | 'high_resource'
-  domains: string[]
   has_parity: boolean
 }
 
 export interface LanguagesResponse {
   languages: Language[]
   n_african: number
-  domains: string[]
   data_version: string | null
 }
 
@@ -34,7 +32,6 @@ export interface RankingResponse {
   rows: RankingRow[]
   lang: string
   langs?: string[] | null
-  domain: string
   n_african?: number
 }
 
@@ -51,7 +48,10 @@ export interface TokenizerDetail {
   org: string
   vocab_size: number | null
   algorithm: string | null
-  domains: { domain: string; fertility: number | null }[]
+  fertility: number | null
+  parity: number | null
+  bytes_per_token: number | null
+  n_langs: number
   best_languages: LangScore[]
   worst_languages: LangScore[]
 }

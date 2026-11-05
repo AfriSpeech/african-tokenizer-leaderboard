@@ -56,7 +56,6 @@ def _languages() -> list[dict]:
             "code": code,
             "name": m["pretty_name"],
             "group": m.get("group", "african"),
-            "domains": [d["name"] for d in m.get("domains", [])],
             "has_parity": bool(m.get("parities")),
         })
     return sorted(out, key=lambda x: (x["group"] != "african", x["name"].lower()))
@@ -89,12 +88,12 @@ def _tables() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     return sums, parity, info
 
 
-def _per_language(domain: str) -> pd.DataFrame:
+def _per_language() -> pd.DataFrame:
+    """Per tokenizer and language, over all of the language's text."""
     sums, parity, _ = _tables()
     if sums.empty:
         return sums
-    d = sums if domain == "all" else sums[sums["domain"] == domain]
-    g = d.groupby(["model", "lang"], as_index=False)[
+    g = sums.groupby(["model", "lang"], as_index=False)[
         ["total_tokens", "total_words", "total_bytes", "unk_tokens_count"]].sum()
     g["fertility"] = g["total_tokens"] / g["total_words"]
     g["bytes_per_token"] = g["total_bytes"] / g["total_tokens"]
@@ -112,7 +111,6 @@ def languages() -> dict:
     return {
         "languages": langs,
         "n_african": sum(1 for x in langs if x["group"] == "african"),
-        "domains": sorted({d for x in langs for d in x["domains"]}),
         "data_version": _state["version"],
     }
 
@@ -130,16 +128,16 @@ def parse_langs(lang: str) -> list[str] | None:
 
 
 @router.get("/ranking")
-def ranking(lang: str = ALL_LANGS, domain: str = "all") -> dict:
+def ranking(lang: str = ALL_LANGS) -> dict:
     """Rank tokenizers on one language, a custom set ("twi,en"), every language ("all") or
     the African languages ("african").
     Several languages: each counts equally (mean of per-language values); per_lang holds
     each selected language's tokens per word."""
-    per = _per_language(domain)
+    per = _per_language()
     african = {x["code"] for x in _languages() if x["group"] == "african"}
     codes = parse_langs(lang)
     if per.empty:
-        return {"rows": [], "lang": lang, "domain": domain, "n_african": len(african)}
+        return {"rows": [], "lang": lang, "n_african": len(african)}
     every = {x["code"] for x in _languages()}
     pool = set(codes) if codes is not None else (african if lang == ALL_AFRICAN else every)
     sel = per[per["lang"].isin(pool)]
@@ -168,8 +166,8 @@ def ranking(lang: str = ALL_LANGS, domain: str = "all") -> dict:
         if per_lang:
             row["per_lang"] = {c: per_lang.get(r.model, {}).get(c) for c in codes or []}
         rows.append(row)
-    return {"rows": rows, "lang": lang, "langs": codes, "domain": domain,
-            "n_african": len(african), "n_langs": len(pool)}
+    return {"rows": rows, "lang": lang, "langs": codes, "n_african": len(african),
+            "n_langs": len(pool)}
 
 
 @router.get("/tokenizer")
@@ -178,7 +176,7 @@ def tokenizer(name: str, lang: str = ALL_LANGS) -> dict:
     if sums.empty or name not in set(sums["model"]):
         raise HTTPException(404, f"unknown tokenizer {name!r}")
     langs = {x["code"]: x for x in _languages()}
-    per_all = _per_language("all")
+    per_all = _per_language()
     mine = per_all[per_all["model"] == name]
     african = mine[mine["lang"].map(lambda c: langs.get(c, {}).get("group") == "african")]
     ranked = african.sort_values("fertility")
@@ -188,22 +186,23 @@ def tokenizer(name: str, lang: str = ALL_LANGS) -> dict:
                  "fertility": _clean(r.fertility, 3), "parity": _clean(r.parity, 3)}
                 for r in df.itertuples(index=False)]
 
-    d = sums[sums["model"] == name]
     codes = parse_langs(lang)
     if codes is not None:
-        d = d[d["lang"].isin(set(codes))]
+        pool = mine[mine["lang"].isin(set(codes))]
     elif lang == ALL_AFRICAN:
-        d = d[d["lang"].isin(set(african["lang"]))]
-    by_domain = d.groupby("domain", as_index=False)[["total_tokens", "total_words"]].sum()
+        pool = african
+    else:
+        pool = mine
     disp, org = _display(name)
     row = info[info["model"] == name].iloc[0]
     return {
         "model": name, "name": disp, "org": org,
         "vocab_size": None if pd.isna(row.get("vocab_size")) else int(row["vocab_size"]),
         "algorithm": row.get("tokenizer_algorithm"),
-        "domains": [{"domain": r.domain,
-                     "fertility": _clean(r.total_tokens / r.total_words, 3)}
-                    for r in by_domain.itertuples(index=False)],
+        "fertility": _clean(pool["fertility"].mean(), 3),
+        "parity": _clean(pool["parity"].mean(), 3),
+        "bytes_per_token": _clean(pool["bytes_per_token"].mean(), 2),
+        "n_langs": int(pool["lang"].nunique()),
         "best_languages": lang_rows(ranked.head(5)),
         "worst_languages": lang_rows(ranked.tail(5).iloc[::-1]),
     }

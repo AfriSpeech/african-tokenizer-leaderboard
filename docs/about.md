@@ -34,16 +34,16 @@ counting equally, so large languages don't dominate.
 
 Built from the [AfriSpeech Africa Corpus](https://huggingface.co/datasets/AfriSpeech/africa-corpus)
 with the Africa Corpus Builder. Every language with at least 10,000 distinct Bible sentences is
-included; each text domain is sampled up to about 200,000 words.
+included. Each language's text combines whichever of these sources it has, up to about 200,000
+words from each, and every score uses all of it together:
 
-| Domain | Source | Languages |
-|---|---|---|
-| Bible | AfriSpeech/africa-corpus (one translation per language, chapters as documents) | all |
-| Watchtower | AfriSpeech/african-corpus-jw (articles) | where available |
-| Web | AfriSpeech/madlad-91-african, clean split; Twi from ghanaopenai/pristine-twi | where available |
+- AfriSpeech/africa-corpus: Bible text, one translation per language (all languages)
+- AfriSpeech/african-corpus-jw: Watchtower articles (where available)
+- AfriSpeech/madlad-91-african: web text, clean split; for Twi, ghanaopenai/pristine-twi
+  (where available)
 
-Bible and Watchtower text is mostly religious and formal, so absolute numbers on everyday text
-can differ; comparisons between tokenizers on the same text are what the leaderboard is for.
+Much of this text is religious and formal, so absolute numbers on everyday text can differ;
+comparisons between tokenizers on the same text are what the leaderboard is for.
 Where a language code bundles several scripts, the main script is used (for example Latin
 rather than Ajami for Hausa). Arabic uses the least vowel-marked Bible translation available.
 

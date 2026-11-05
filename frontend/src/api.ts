@@ -27,8 +27,8 @@ const q = (params: Record<string, string>) => new URLSearchParams(params).toStri
 export const api = {
   languages: () => request<LanguagesResponse>('/api/v2/languages'),
 
-  ranking: (lang: string, domain: string, signal?: AbortSignal) =>
-    request<RankingResponse>(`/api/v2/ranking?${q({ lang, domain })}`, { signal }),
+  ranking: (lang: string, signal?: AbortSignal) =>
+    request<RankingResponse>(`/api/v2/ranking?${q({ lang })}`, { signal }),
 
   tokenizer: (name: string, lang: string) =>
     request<TokenizerDetail>(`/api/v2/tokenizer?${q({ name, lang })}`),
