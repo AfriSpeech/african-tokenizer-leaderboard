@@ -3037,9 +3037,9 @@ if __name__ == '__main__':
             'compression_bytes': lang_overalls_df['compression_bytes'].mean(),
             'reversible_ratio': lang_overalls_df['reversible_ratio'].mean(),
             'unk_ratio': lang_overalls_df['unk_ratio'].mean(),
-            'byte_fidelity': overalls['multilingual_overall'].get('byte_fidelity'),
-            'effective_bytes_per_token': overalls['multilingual_overall'].get('effective_bytes_per_token'),
-            'ebpb': overalls['multilingual_overall'].get('ebpb'),
+            'byte_fidelity': overalls.get('multilingual_overall', {}).get('byte_fidelity'),
+            'effective_bytes_per_token': overalls.get('multilingual_overall', {}).get('effective_bytes_per_token'),
+            'ebpb': overalls.get('multilingual_overall', {}).get('ebpb'),
             'total_tokens': lang_overalls_df['total_tokens'].sum(),
             'total_words': lang_overalls_df['total_words'].sum(),
             'total_chars': lang_overalls_df['total_chars'].sum(),
@@ -3089,10 +3089,10 @@ if __name__ == '__main__':
         print(f"Total words: {overalls['multilingual_overall']['total_words']}")
         print(f"Total chars: {overalls['multilingual_overall']['total_chars']}")
         print(f"Total bytes: {overalls['multilingual_overall']['total_bytes']}")
-        print(f"Decoded bytes total: {overalls['multilingual_overall'].get('decoded_bytes_total')}")
+        print(f"Decoded bytes total: {overalls.get('multilingual_overall', {}).get('decoded_bytes_total')}")
         print(f"Total docs: {overalls['multilingual_overall']['total_docs']}")
         print(f"Reversible Docs count: {overalls['multilingual_overall']['reversible_docs_count']}")
         print(f"Unk tokens count: {overalls['multilingual_overall']['unk_tokens_count']}")
-        print(f"Byte edit distance total: {overalls['multilingual_overall'].get('byte_edit_distance_total')}")
-        print(f"Byte edit denominator total: {overalls['multilingual_overall'].get('byte_edit_denominator_total')}")
+        print(f"Byte edit distance total: {overalls.get('multilingual_overall', {}).get('byte_edit_distance_total')}")
+        print(f"Byte edit denominator total: {overalls.get('multilingual_overall', {}).get('byte_edit_denominator_total')}")
         print(f"Last Eval Date: {overalls['multilingual_overall']['evaluation_date']}")
