@@ -38,6 +38,7 @@ DISPLAY = {
     "openai/gpt-oss-20b": ("gpt-oss", "OpenAI"),
     "tokenizers/pocket-tts-english": ("Pocket TTS English", "Kyutai"),
     "tokenizers/pocket-tts-en-twi": ("Pocket TTS English+Twi", "GhanaOpenAI"),
+    "tokenizers/serengeti": ("serengeti", "UBC-NLP"),
 }
 
 _state: dict = {"meta": None, "raw": None, "version": None}

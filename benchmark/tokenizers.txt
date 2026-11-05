@@ -31,7 +31,8 @@ CohereLabs/aya-101
 # --- African-focused models
 Davlan/afro-xlmr-large
 castorini/afriberta_large
-UBC-NLP/serengeti
+# UBC-NLP/serengeti's own tokenizer.json, config fixed (see make_local_tokenizers.py)
+tokenizers/serengeti
 lelapa/InkubaLM-0.4B
 
 # --- Pocket TTS (local folders built by benchmark/make_local_tokenizers.py)
