@@ -6,7 +6,8 @@ Per tokenizer and language:
   unk_ratio        unknown tokens / tokens
   parity           tokens on the language's parity verses / tokens on the same verses in
                    English, both with the same tokenizer (parity_en__<lang> sets)
-"All African languages" averages per-language values with equal weight per language.
+"all" (every language) and "african" (African languages only) average per-language values
+with equal weight per language, as does a custom set such as "twi,en".
 """
 
 from functools import lru_cache
@@ -17,7 +18,8 @@ from fastapi import APIRouter, HTTPException
 router = APIRouter(prefix="/api/v2")
 
 OVERALL_DOMAINS = {"lang_overall", "multilingual_overall"}
-ALL_AFRICAN = "all"
+ALL_LANGS = "all"  # every language in the benchmark
+ALL_AFRICAN = "african"  # the African languages only
 
 # Friendly names for well-known tokenizers; everything else shows its repo name.
 DISPLAY = {
@@ -115,30 +117,46 @@ def languages() -> dict:
     }
 
 
+def parse_langs(lang: str) -> list[str] | None:
+    """'all' / 'african' -> None (a preset); 'twi,en' -> ['twi', 'en']."""
+    if lang in (ALL_LANGS, ALL_AFRICAN):
+        return None
+    codes = list(dict.fromkeys(c.strip() for c in lang.split(",") if c.strip()))
+    known = {x["code"] for x in _languages()}
+    unknown = [c for c in codes if c not in known]
+    if not codes or unknown:
+        raise HTTPException(404, f"unknown language(s): {unknown or lang!r}")
+    return codes
+
+
 @router.get("/ranking")
-def ranking(lang: str = ALL_AFRICAN, domain: str = "all") -> dict:
+def ranking(lang: str = ALL_LANGS, domain: str = "all") -> dict:
+    """Rank tokenizers on one language, a custom set ("twi,en"), every language ("all") or
+    the African languages ("african").
+    Several languages: each counts equally (mean of per-language values); per_lang holds
+    each selected language's tokens per word."""
     per = _per_language(domain)
-    if per.empty:
-        return {"rows": [], "lang": lang, "domain": domain}
     african = {x["code"] for x in _languages() if x["group"] == "african"}
-    if lang == ALL_AFRICAN:
-        sel = per[per["lang"].isin(african)]
-        agg = sel.groupby("model", as_index=False).agg(
-            fertility=("fertility", "mean"), bytes_per_token=("bytes_per_token", "mean"),
-            unk_ratio=("unk_ratio", "mean"), parity=("parity", "mean"),
-            n_langs=("lang", "nunique"))
-    else:
-        if lang not in {x["code"] for x in _languages()}:
-            raise HTTPException(404, f"unknown language {lang!r}")
-        agg = per[per["lang"] == lang][
-            ["model", "fertility", "bytes_per_token", "unk_ratio", "parity"]].copy()
-        agg["n_langs"] = 1
+    codes = parse_langs(lang)
+    if per.empty:
+        return {"rows": [], "lang": lang, "domain": domain, "n_african": len(african)}
+    every = {x["code"] for x in _languages()}
+    pool = set(codes) if codes is not None else (african if lang == ALL_AFRICAN else every)
+    sel = per[per["lang"].isin(pool)]
+    agg = sel.groupby("model", as_index=False).agg(
+        fertility=("fertility", "mean"), bytes_per_token=("bytes_per_token", "mean"),
+        unk_ratio=("unk_ratio", "mean"), parity=("parity", "mean"),
+        n_langs=("lang", "nunique"))
+    per_lang: dict[str, dict[str, float | None]] = {}
+    if codes is not None and len(codes) > 1:
+        for r in sel.itertuples(index=False):
+            per_lang.setdefault(r.model, {})[r.lang] = _clean(r.fertility, 3)
     _, _, info = _tables()
     agg = agg.merge(info, on="model", how="left").sort_values("fertility")
     rows = []
     for rank, r in enumerate(agg.itertuples(index=False), 1):
         name, org = _display(r.model)
-        rows.append({
+        row = {
             "rank": rank, "model": r.model, "name": name, "org": org,
             "algorithm": getattr(r, "tokenizer_algorithm", None),
             "vocab_size": None if pd.isna(getattr(r, "vocab_size", None))
@@ -146,12 +164,16 @@ def ranking(lang: str = ALL_AFRICAN, domain: str = "all") -> dict:
             "fertility": _clean(r.fertility, 3), "parity": _clean(r.parity, 3),
             "bytes_per_token": _clean(r.bytes_per_token, 2),
             "unk_ratio": _clean(r.unk_ratio, 4), "n_langs": int(r.n_langs),
-        })
-    return {"rows": rows, "lang": lang, "domain": domain, "n_african": len(african)}
+        }
+        if per_lang:
+            row["per_lang"] = {c: per_lang.get(r.model, {}).get(c) for c in codes or []}
+        rows.append(row)
+    return {"rows": rows, "lang": lang, "langs": codes, "domain": domain,
+            "n_african": len(african), "n_langs": len(pool)}
 
 
 @router.get("/tokenizer")
-def tokenizer(name: str, lang: str = ALL_AFRICAN) -> dict:
+def tokenizer(name: str, lang: str = ALL_LANGS) -> dict:
     sums, parity, info = _tables()
     if sums.empty or name not in set(sums["model"]):
         raise HTTPException(404, f"unknown tokenizer {name!r}")
@@ -167,9 +189,10 @@ def tokenizer(name: str, lang: str = ALL_AFRICAN) -> dict:
                 for r in df.itertuples(index=False)]
 
     d = sums[sums["model"] == name]
-    if lang != ALL_AFRICAN:
-        d = d[d["lang"] == lang]
-    else:
+    codes = parse_langs(lang)
+    if codes is not None:
+        d = d[d["lang"].isin(set(codes))]
+    elif lang == ALL_AFRICAN:
         d = d[d["lang"].isin(set(african["lang"]))]
     by_domain = d.groupby("domain", as_index=False)[["total_tokens", "total_words"]].sum()
     disp, org = _display(name)

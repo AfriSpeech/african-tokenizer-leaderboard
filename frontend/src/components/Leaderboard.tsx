@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import type { LanguagesResponse, RankBy, RankingRow, TokenizerDetail } from '../types'
 import { api } from '../api'
-import LanguagePicker, { ALL } from './LanguagePicker'
+import LanguagePicker, { AFRICAN, ALL } from './LanguagePicker'
 
 const DOMAINS: { id: string; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -20,14 +20,21 @@ const PAGE_SIZE = 25
 const fmt = (v: number | null, d = 2) => (v == null ? '—' : v.toFixed(d))
 const fmtInt = (v: number | null) => (v == null ? '—' : v.toLocaleString('en-US'))
 
+const MAX_LANG_COLUMNS = 4
+
 function readParams() {
   const p = new URLSearchParams(window.location.hash.split('?')[1] ?? '')
-  return { lang: p.get('lang') ?? ALL, domain: p.get('domain') ?? 'all', by: (p.get('by') ?? 'fertility') as RankBy }
+  const lang = p.get('lang') ?? ALL
+  return {
+    langs: lang.split(',').filter(Boolean),
+    domain: p.get('domain') ?? 'all',
+    by: (p.get('by') ?? 'fertility') as RankBy,
+  }
 }
 
-export default function Leaderboard({ langs }: { langs: LanguagesResponse | null }) {
+export default function Leaderboard({ langs: info }: { langs: LanguagesResponse | null }) {
   const initial = readParams()
-  const [lang, setLang] = useState(initial.lang)
+  const [langs, setLangs] = useState<string[]>(initial.langs)
   const [domain, setDomain] = useState(initial.domain)
   const [rankBy, setRankBy] = useState<RankBy>(initial.by)
   const [rows, setRows] = useState<RankingRow[] | null>(null)
@@ -35,8 +42,18 @@ export default function Leaderboard({ langs }: { langs: LanguagesResponse | null
   const [showAll, setShowAll] = useState(false)
   const [open, setOpen] = useState<string | null>(null)
 
-  const language = langs?.languages.find((l) => l.code === lang)
-  const availableDomains = lang === ALL ? null : new Set(language?.domains ?? [])
+  const isAll = langs.length === 1 && langs[0] === ALL
+  const isAfrican = langs.length === 1 && langs[0] === AFRICAN
+  const lang = langs.join(',')
+  const custom = langs.length > 0 && !isAll && !isAfrican
+  const selected = custom
+    ? langs.map((c) => info?.languages.find((l) => l.code === c)).filter((l) => l != null)
+    : []
+  // A domain is offered when every selected language has text in it.
+  const availableDomains = custom
+    ? new Set(DOMAINS.map((d) => d.id).filter((d) => selected.every((l) => l.domains.includes(d))))
+    : null
+  const langColumns = custom && langs.length > 1 && langs.length <= MAX_LANG_COLUMNS ? selected : []
 
   useEffect(() => {
     const params = new URLSearchParams({ lang, domain, by: rankBy })
@@ -48,6 +65,7 @@ export default function Leaderboard({ langs }: { langs: LanguagesResponse | null
     setRows(null)
     setError(null)
     setOpen(null)
+    if (!lang) return
     api.ranking(lang, domain, ctrl.signal)
       .then((r) => setRows(r.rows))
       .catch((e: Error) => { if (e.name !== 'AbortError') setError(e.message) })
@@ -68,7 +86,15 @@ export default function Leaderboard({ langs }: { langs: LanguagesResponse | null
 
   const maxFert = Math.max(...(sorted ?? []).map((r) => r.fertility ?? 0), 1)
   const visible = sorted ? (showAll ? sorted : sorted.slice(0, PAGE_SIZE)) : null
-  const title = lang === ALL ? `All African languages${langs ? ` (${langs.n_african})` : ''}` : language?.name ?? lang
+  const title = !langs.length
+    ? 'No languages selected'
+    : isAll
+      ? `All languages${info ? ` (${info.languages.length})` : ''}`
+    : isAfrican
+      ? `All African languages${info ? ` (${info.n_african})` : ''}`
+        : langs.length <= MAX_LANG_COLUMNS
+          ? selected.map((l) => l.name).join(' + ')
+          : `${langs.length} languages`
   const domainLabel = DOMAINS.find((d) => d.id === domain)?.label.toLowerCase() ?? domain
 
   return (
@@ -82,15 +108,16 @@ export default function Leaderboard({ langs }: { langs: LanguagesResponse | null
       </section>
 
       <section className="filters" aria-label="Filters">
-        {langs ? (
+        {info ? (
           <LanguagePicker
-            languages={langs.languages}
-            nAfrican={langs.n_african}
-            value={lang}
-            onChange={(c) => {
-              setLang(c)
-              const l = langs.languages.find((x) => x.code === c)
-              if (c !== ALL && domain !== 'all' && !l?.domains.includes(domain)) setDomain('all')
+            languages={info.languages}
+            nAfrican={info.n_african}
+            value={langs}
+            onChange={(codes) => {
+              setLangs(codes)
+              const sel = codes.filter((c) => c !== ALL && c !== AFRICAN)
+                .map((c) => info.languages.find((x) => x.code === c))
+              if (domain !== 'all' && sel.some((l) => !l?.domains.includes(domain))) setDomain('all')
             }}
           />
         ) : (
@@ -124,10 +151,16 @@ export default function Leaderboard({ langs }: { langs: LanguagesResponse | null
       </section>
 
       <div className="table-head">
-        <h2>{title} · {domainLabel === 'all' ? 'all domains' : domainLabel} · {sorted ? `${sorted.length} tokenizers` : 'loading…'}</h2>
+        <h2>{title}{lang && <> · {domainLabel === 'all' ? 'all domains' : domainLabel} · {sorted ? `${sorted.length} tokenizers` : 'loading…'}</>}</h2>
       </div>
 
       {error && <div className="notice error" role="alert">{error}</div>}
+      {!lang && (
+        <div className="notice info" role="status">
+          Pick one or more languages above, or{' '}
+          <button className="link-button" onClick={() => setLangs([ALL])}>rank across all languages</button>.
+        </div>
+      )}
       {sorted && sorted.length === 0 && <div className="notice info">No results yet for this selection.</div>}
 
       <div className="table-wrap">
@@ -136,15 +169,16 @@ export default function Leaderboard({ langs }: { langs: LanguagesResponse | null
             <tr>
               <th scope="col" style={{ width: 48 }}>#</th>
               <th scope="col">Tokenizer</th>
-              <th scope="col" style={{ width: 260 }}>Tokens / word ↓</th>
+              <th scope="col" style={{ width: 260 }}>{custom && langs.length === 1 ? 'Tokens / word ↓' : 'Avg tokens / word ↓'}</th>
+              {langColumns.map((l) => <th key={l.code} scope="col" className="lang-col">{l.name}</th>)}
               <th scope="col" className="num">Parity vs EN ↓</th>
               <th scope="col" className="num">Bytes / token ↑</th>
               <th scope="col" className="num">Vocab</th>
             </tr>
           </thead>
           <tbody>
-            {!visible && Array.from({ length: 8 }, (_, i) => (
-              <tr key={i}>{Array.from({ length: 6 }, (__, j) => <td key={j}><div className="skeleton" /></td>)}</tr>
+            {!visible && lang && Array.from({ length: 8 }, (_, i) => (
+              <tr key={i}>{Array.from({ length: 6 + langColumns.length }, (__, j) => <td key={j}><div className="skeleton" /></td>)}</tr>
             ))}
             {visible?.map((r, i) => (
               <Fragment key={r.model}>
@@ -168,12 +202,13 @@ export default function Leaderboard({ langs }: { langs: LanguagesResponse | null
                       </div>
                     </div>
                   </td>
+                  {langColumns.map((l) => <td key={l.code} className="lang-col mono">{fmt(r.per_lang?.[l.code] ?? null)}</td>)}
                   <td className="num mono">{fmt(r.parity)}</td>
                   <td className="num mono">{fmt(r.bytes_per_token, 1)}</td>
                   <td className="num mono muted">{fmtInt(r.vocab_size)}</td>
                 </tr>
                 {open === r.model && (
-                  <tr><td colSpan={6} style={{ padding: 0 }}><Detail model={r.model} lang={lang} /></td></tr>
+                  <tr><td colSpan={6 + langColumns.length} style={{ padding: 0 }}><Detail model={r.model} lang={lang} /></td></tr>
                 )}
               </Fragment>
             ))}

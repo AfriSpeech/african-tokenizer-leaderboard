@@ -95,12 +95,17 @@ main { padding: 32px 0 56px; }
 
 /* Language picker */
 .picker { position: relative; flex: 1 1 300px; min-width: 0; }
-.picker-box { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg); }
-.picker-box input { border: 0; outline: none; flex: 1; min-width: 0; background: transparent; font-size: 15px; }
+.picker-box { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 44px; padding: 5px 12px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg); cursor: text; }
+.picker-box input { border: 0; outline: none; flex: 1 1 120px; min-width: 120px; height: 32px; background: transparent; font-size: 15px; }
+.lang-chip { display: inline-flex; align-items: center; gap: 2px; height: 30px; padding: 0 4px 0 10px; border-radius: 999px; background: var(--bg-accent); color: var(--accent); font-size: 13px; font-weight: 600; }
+.lang-chip button { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border: 0; border-radius: 999px; background: transparent; color: inherit; cursor: pointer; }
+.lang-chip button:hover { background: var(--bg-hover); }
+.picker-check { width: 16px; color: var(--accent); font-weight: 700; }
 .picker-list { position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 4px); max-height: 340px; overflow-y: auto; margin: 0; padding: 4px; list-style: none; background: var(--bg); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); }
 .picker-group { padding: 8px 10px 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-.picker-option { display: flex; justify-content: space-between; gap: 12px; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 14px; }
-.picker-option[aria-selected='true'] { background: var(--bg-accent); }
+.picker-option { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+.picker-option.active { background: var(--bg-hover); }
+.picker-option[aria-selected='true'] { font-weight: 600; }
 .picker-option .code { font-family: var(--mono); font-size: 12px; color: var(--text-muted); }
 .picker-empty { padding: 12px 10px; font-size: 14px; color: var(--text-muted); }
 
@@ -112,6 +117,7 @@ table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 14p
 thead tr { background: var(--bg-subtle); text-align: left; color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
 th { padding: 12px 16px; font-weight: 600; }
 th.num, td.num { text-align: right; }
+th.lang-col, td.lang-col { text-align: right; text-transform: none; letter-spacing: 0; white-space: nowrap; }
 td { padding: 14px 16px; border-top: 1px solid var(--border); vertical-align: middle; }
 tbody tr.row { cursor: pointer; }
 tbody tr.row:hover { background: var(--bg-hover); }

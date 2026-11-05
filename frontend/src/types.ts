@@ -27,11 +27,13 @@ export interface RankingRow {
   bytes_per_token: number | null
   unk_ratio: number | null
   n_langs: number
+  per_lang?: Record<string, number | null>
 }
 
 export interface RankingResponse {
   rows: RankingRow[]
   lang: string
+  langs?: string[] | null
   domain: string
   n_african?: number
 }
