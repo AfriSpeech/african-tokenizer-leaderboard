@@ -1,44 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { api } from '../api'
 
 export default function About() {
-  const [about, setAbout] = useState<string | null>(null)
-  const [description, setDescription] = useState<string | null>(null)
-
+  const [md, setMd] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
   useEffect(() => {
-    Promise.all([
-      api.content('description').then((r) => r.content),
-      api.content('about').then((r) => r.content),
-    ])
-      .then(([desc, ab]) => {
-        setDescription(desc)
-        setAbout(ab)
-      })
-      .catch(() => {
-        setDescription('Failed to load.')
-        setAbout('Failed to load.')
-      })
+    api.content('about').then((r) => setMd(r.content)).catch((e: Error) => setError(e.message))
   }, [])
-
-  if (!about || !description) {
-    return (
-      <div className="content-page">
-        <div className="loading-spinner" style={{ margin: '48px auto' }} />
-      </div>
-    )
-  }
-
+  if (error) return <div className="notice error">{error}</div>
+  if (md == null) return <div className="skeleton" style={{ width: '50%' }} />
   return (
-    <div className="content-page">
-      <h1 className="content-page__title">About the Leaderboard</h1>
-      <div className="markdown">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{description}</ReactMarkdown>
-      </div>
-      <div className="markdown" style={{ marginTop: '32px' }}>
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{about}</ReactMarkdown>
-      </div>
-    </div>
+    <article className="prose">
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{md}</ReactMarkdown>
+    </article>
   )
 }

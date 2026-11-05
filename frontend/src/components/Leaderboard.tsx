@@ -1,701 +1,247 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import type {
-  Metadata,
-  FilterState,
-  LocalFilterState,
-  LeaderboardResponse,
-  ColumnHeader,
-  CountInfo,
-} from '../types'
-import { parseColumnHeaders } from '../types'
-import { applySearchFilter, validateSearchQuery } from '../utils/searchFilter'
-import { filterDuplicates } from '../utils/filterDuplicates'
-import LeaderboardTable from './LeaderboardTable'
+import { Fragment, useEffect, useMemo, useState } from 'react'
+import type { LanguagesResponse, RankBy, RankingRow, TokenizerDetail } from '../types'
+import { api } from '../api'
+import LanguagePicker, { ALL } from './LanguagePicker'
 
-interface Props {
-  metadata: Metadata
-  data: LeaderboardResponse | null
-  filters: FilterState
-  localFilters: LocalFilterState
-  loading: boolean
-  onFiltersChange: (f: FilterState) => void
-  onLocalFiltersChange: (f: LocalFilterState) => void
-  onRefresh: () => void
-}
-
-const EXAMPLES = [
-  '@char_fidelity>0.9',
-  '@vocab_size<100000 @unk_ratio<0.05 @ch>0.25',
-  'google-bert/bert-base-multilingual-cased',
-  'meta @fertility<2',
-  '@compression_bytes>4 @parity_en<1.4 @tokenizer_algorithm=BPE',
-  '@ebpb<2.5 @byte_fidelity>0.99',
-  '@freq_renyi_efficiency>0.55 @freq_gini<0.8',
+const DOMAINS: { id: string; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'bible', label: 'Bible' },
+  { id: 'watchtower', label: 'Watchtower' },
+  { id: 'web', label: 'Web' },
 ]
 
-const FILTER_PATTERN = /(@[a-zA-Z_][a-zA-Z0-9_]*(?:>=|<=|>|<|==|!=|=)[^\s]+)/g
+const RANK_BY: { id: RankBy; label: string; lowerIsBetter: boolean }[] = [
+  { id: 'fertility', label: 'Tokens per word (lower is better)', lowerIsBetter: true },
+  { id: 'parity', label: 'Parity vs English (lower is better)', lowerIsBetter: true },
+  { id: 'bytes_per_token', label: 'Bytes per token (higher is better)', lowerIsBetter: false },
+]
 
-function parseFilterChips(input: string): string[] {
-  FILTER_PATTERN.lastIndex = 0
-  const chips: string[] = []
-  let m: RegExpExecArray | null
-  while ((m = FILTER_PATTERN.exec(input)) !== null) {
-    chips.push(m[0])
-  }
-  return chips
+const PAGE_SIZE = 25
+const fmt = (v: number | null, d = 2) => (v == null ? '—' : v.toFixed(d))
+const fmtInt = (v: number | null) => (v == null ? '—' : v.toLocaleString('en-US'))
+
+function readParams() {
+  const p = new URLSearchParams(window.location.hash.split('?')[1] ?? '')
+  return { lang: p.get('lang') ?? ALL, domain: p.get('domain') ?? 'all', by: (p.get('by') ?? 'fertility') as RankBy }
 }
 
-function removeChipFromInput(input: string, chip: string): string {
-  return input.replace(chip, '').replace(/\s{2,}/g, ' ').trim()
-}
+export default function Leaderboard({ langs }: { langs: LanguagesResponse | null }) {
+  const initial = readParams()
+  const [lang, setLang] = useState(initial.lang)
+  const [domain, setDomain] = useState(initial.domain)
+  const [rankBy, setRankBy] = useState<RankBy>(initial.by)
+  const [rows, setRows] = useState<RankingRow[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [showAll, setShowAll] = useState(false)
+  const [open, setOpen] = useState<string | null>(null)
 
-export default function Leaderboard({
-  metadata,
-  data,
-  filters,
-  localFilters,
-  loading,
-  onFiltersChange,
-  onLocalFiltersChange,
-  onRefresh,
-}: Props) {
-  const [activeLanguage, setActiveLanguage] = useState('multilingual')
-  const [showExamples, setShowExamples] = useState(false)
-  const [searchInput, setSearchInput] = useState(localFilters.search_query)
-  const [searchError, setSearchError] = useState<string | null>(null)
-  const [showFilterHelp, setShowFilterHelp] = useState(false)
-  const [suggestions, setSuggestions] = useState<{ field: string; description: string }[]>([])
-  const [activeSuggestion, setActiveSuggestion] = useState(0)
-  const searchRef = useRef<HTMLInputElement>(null)
-  const suggestionsRef = useRef<HTMLDivElement>(null)
-
-  // Column visibility — initialized from server defaults; "model" is always visible
-  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
-    () => new Set(metadata.default_visible_columns ?? Object.keys(metadata.display_columns_map)),
-  )
-
-  const allColumns: ColumnHeader[] = useMemo(
-    () =>
-      parseColumnHeaders(
-        metadata.display_columns_map,
-        metadata.dataframe_datatypes,
-      ),
-    [metadata],
-  )
-
-  // The subset of columns actually shown in the table (model is always pinned)
-  const columns: ColumnHeader[] = useMemo(
-    () => allColumns.filter((c) => c.key === 'model' || visibleColumns.has(c.key)),
-    [allColumns, visibleColumns],
-  )
-
-  const defaultVisibleSet = useMemo(
-    () => new Set(metadata.default_visible_columns ?? Object.keys(metadata.display_columns_map)),
-    [metadata],
-  )
-
-  const handleToggleColumn = useCallback((key: string) => {
-    if (key === 'model') return
-    setVisibleColumns((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) {
-        next.delete(key)
-      } else {
-        next.add(key)
-      }
-      return next
-    })
-  }, [])
-
-  const handleShowDefault = useCallback(() => {
-    setVisibleColumns(new Set(defaultVisibleSet))
-  }, [defaultVisibleSet])
-
-  const handleShowAll = useCallback(() => {
-    setVisibleColumns(new Set(allColumns.map((c) => c.key)))
-  }, [allColumns])
-
-  const isMultilingual = activeLanguage === 'multilingual'
-
-  // Raw data from server for the active tab only — deps are granular so patching
-  // a different tab does not trigger a recompute here.
-  const activeSlice = isMultilingual
-    ? data?.multilingual_df
-    : data?.lang_dfs[activeLanguage]
-
-  // True when the active tab's data has not yet arrived from the server
-  const isTabLoading = !loading && activeSlice === undefined
-
-  const rawData = useMemo(() => {
-    return activeSlice ?? []
-  }, [activeSlice])
-
-  // Client-side filtering pipeline: search → dedup
-  const searchedData = useMemo(
-    () => applySearchFilter(rawData, localFilters.search_query),
-    [rawData, localFilters.search_query],
-  )
-
-  const dedupedData = useMemo(
-    () => filterDuplicates(searchedData, localFilters.hide_duplicates),
-    [searchedData, localFilters.hide_duplicates],
-  )
-
-  // CountInfo computed entirely client-side
-  const currentCounts: CountInfo = useMemo(() => {
-    return { total: rawData.length, filtered: dedupedData.length }
-  }, [rawData, dedupedData])
-
-  const filterChips = useMemo(() => parseFilterChips(searchInput), [searchInput])
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value
-    setSearchInput(val)
-
-    const cursor = e.target.selectionStart ?? val.length
-    const before = val.slice(0, cursor)
-    const atMatch = before.match(/@([a-zA-Z_]*)$/)
-    if (atMatch) {
-      const prefix = atMatch[1].toLowerCase()
-      const filtered = (metadata.filter_fields || []).filter((f) =>
-        f.field.startsWith(prefix),
-      )
-      setSuggestions(filtered)
-      setActiveSuggestion(0)
-    } else {
-      setSuggestions([])
-    }
-  }
-
-  const insertSuggestion = (field: string) => {
-    const el = searchRef.current
-    if (!el) return
-    const cursor = el.selectionStart ?? searchInput.length
-    const before = searchInput.slice(0, cursor)
-    const after = searchInput.slice(cursor)
-    const atMatch = before.match(/@([a-zA-Z_]*)$/)
-    if (atMatch) {
-      const newBefore = before.slice(0, before.length - atMatch[0].length) + `@${field}`
-      setSearchInput(newBefore + after)
-      setTimeout(() => {
-        if (el) {
-          el.selectionStart = el.selectionEnd = newBefore.length
-          el.focus()
-        }
-      }, 0)
-    }
-    setSuggestions([])
-  }
-
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (suggestions.length === 0) return
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setActiveSuggestion((i) => Math.min(i + 1, suggestions.length - 1))
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setActiveSuggestion((i) => Math.max(i - 1, 0))
-    } else if (e.key === 'Enter' || e.key === 'Tab') {
-      e.preventDefault()
-      insertSuggestion(suggestions[activeSuggestion].field)
-    } else if (e.key === 'Escape') {
-      setSuggestions([])
-    }
-  }
+  const language = langs?.languages.find((l) => l.code === lang)
+  const availableDomains = lang === ALL ? null : new Set(language?.domains ?? [])
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(e.target as Node) &&
-        searchRef.current &&
-        !searchRef.current.contains(e.target as Node)
-      ) {
-        setSuggestions([])
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
+    const params = new URLSearchParams({ lang, domain, by: rankBy })
+    history.replaceState(null, '', `#/leaderboard?${params}`)
+  }, [lang, domain, rankBy])
 
-  const doSearch = useCallback(
-    (query: string) => {
-      const { isValid, errorMessage } = validateSearchQuery(query)
-      if (!isValid) {
-        setSearchError(errorMessage)
-        return
-      }
-      setSearchError(null)
-      onLocalFiltersChange({ ...localFilters, search_query: query })
-    },
-    [localFilters, onLocalFiltersChange],
-  )
+  useEffect(() => {
+    const ctrl = new AbortController()
+    setRows(null)
+    setError(null)
+    setOpen(null)
+    api.ranking(lang, domain, ctrl.signal)
+      .then((r) => setRows(r.rows))
+      .catch((e: Error) => { if (e.name !== 'AbortError') setError(e.message) })
+    return () => ctrl.abort()
+  }, [lang, domain])
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setSuggestions([])
-    doSearch(searchInput)
-  }
-
-  const handleExampleClick = (q: string) => {
-    setSearchInput(q)
-    setSuggestions([])
-    doSearch(q)
-  }
-
-  const handleClearSearch = () => {
-    setSearchInput('')
-    setSearchError(null)
-    setSuggestions([])
-    onLocalFiltersChange({ ...localFilters, search_query: '' })
-  }
-
-  const handleRemoveChip = (chip: string) => {
-    const newInput = removeChipFromInput(searchInput, chip)
-    setSearchInput(newInput)
-    doSearch(newInput)
-  }
-
-  const handleLanguageToggle = (code: string) => {
-    const selected = filters.selected_langs.includes(code)
-      ? filters.selected_langs.filter((c) => c !== code)
-      : [...filters.selected_langs, code]
-    onFiltersChange({ ...filters, selected_langs: selected })
-  }
-
-  const handleDomainToggle = (domain: string) => {
-    if (isMultilingual) {
-      const selected = filters.selected_multilingual_domains.includes(domain)
-        ? filters.selected_multilingual_domains.filter((d) => d !== domain)
-        : [...filters.selected_multilingual_domains, domain]
-      onFiltersChange({
-        ...filters,
-        selected_multilingual_domains: selected,
-      })
-    } else {
-      const langDomains = filters.selected_domains[activeLanguage] || []
-      const selected = langDomains.includes(domain)
-        ? langDomains.filter((d) => d !== domain)
-        : [...langDomains, domain]
-      onFiltersChange({
-        ...filters,
-        selected_domains: {
-          ...filters.selected_domains,
-          [activeLanguage]: selected,
-        },
-      })
-    }
-  }
-
-  const handleHideDuplicates = () => {
-    onLocalFiltersChange({ ...localFilters, hide_duplicates: !localFilters.hide_duplicates })
-  }
-
-  const currentDomains = useMemo(() => {
-    if (isMultilingual) {
-      return metadata.all_domains
-    }
-    const tab = metadata.language_tabs.find(
-      (l) => l.code === activeLanguage,
-    )
-    return tab?.domains || []
-  }, [activeLanguage, isMultilingual, metadata])
-
-  const selectedDomains = useMemo(() => {
-    if (isMultilingual) {
-      return filters.selected_multilingual_domains
-    }
-    return filters.selected_domains[activeLanguage] || []
-  }, [activeLanguage, isMultilingual, filters])
-
-  const handleSelectAllDomains = () => {
-    const allNames = currentDomains.map((d) => d[1])
-    if (isMultilingual) {
-      onFiltersChange({
-        ...filters,
-        selected_multilingual_domains: allNames,
-      })
-    } else {
-      onFiltersChange({
-        ...filters,
-        selected_domains: {
-          ...filters.selected_domains,
-          [activeLanguage]: allNames,
-        },
-      })
-    }
-  }
-
-  const handleClearAllDomains = () => {
-    if (isMultilingual) {
-      onFiltersChange({ ...filters, selected_multilingual_domains: [] })
-    } else {
-      onFiltersChange({
-        ...filters,
-        selected_domains: {
-          ...filters.selected_domains,
-          [activeLanguage]: [],
-        },
-      })
-    }
-  }
-
-  const handleSelectAllLangs = () => {
-    onFiltersChange({
-      ...filters,
-      selected_langs: metadata.language_tabs.map((l) => l.code),
+  const metric = RANK_BY.find((m) => m.id === rankBy)!
+  const sorted = useMemo(() => {
+    if (!rows) return null
+    const val = (r: RankingRow) => r[rankBy]
+    return [...rows].sort((a, b) => {
+      const va = val(a), vb = val(b)
+      if (va == null) return 1
+      if (vb == null) return -1
+      return metric.lowerIsBetter ? va - vb : vb - va
     })
-  }
+  }, [rows, rankBy, metric.lowerIsBetter])
 
-  const handleClearAllLangs = () => {
-    onFiltersChange({ ...filters, selected_langs: [] })
-  }
-
-  const handleDownloadCSV = () => {
-    if (!dedupedData.length) return
-
-    // Collect all keys present in the data (all display columns first, then extras)
-    const displayKeys = allColumns.map((c) => c.key)
-    const extraKeys = Object.keys(dedupedData[0]).filter((k) => !displayKeys.includes(k))
-    const allKeys = [...displayKeys, ...extraKeys]
-
-    // Use friendly header names for display columns, raw key names for extras
-    const displayLabelMap = Object.fromEntries(allColumns.map((c) => [c.key, c.label]))
-    const headers = allKeys.map((k) => displayLabelMap[k] ?? k)
-
-    const escape = (v: unknown) => {
-      const s = v == null ? '' : String(v)
-      return s.includes(',') || s.includes('"') || s.includes('\n')
-        ? `"${s.replace(/"/g, '""')}"`
-        : s
-    }
-
-    const csvRows = [headers.join(',')]
-    for (const row of dedupedData) {
-      csvRows.push(allKeys.map((key) => escape(row[key])).join(','))
-    }
-
-    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `leaderboard_${activeLanguage}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-
-  const langTabs = [
-    { code: 'multilingual', name: 'Multilingual' },
-    ...metadata.language_tabs.map((l) => ({
-      code: l.code,
-      name: l.name,
-    })),
-  ]
+  const maxFert = Math.max(...(sorted ?? []).map((r) => r.fertility ?? 0), 1)
+  const visible = sorted ? (showAll ? sorted : sorted.slice(0, PAGE_SIZE)) : null
+  const title = lang === ALL ? `All African languages${langs ? ` (${langs.n_african})` : ''}` : language?.name ?? lang
+  const domainLabel = DOMAINS.find((d) => d.id === domain)?.label.toLowerCase() ?? domain
 
   return (
-    <div className="leaderboard">
-      {/* Search row */}
-      <form className="search-row" onSubmit={handleSearchSubmit}>
-        <div className="search-input-wrap">
-          <button type="submit" className="search-submit-icon" title="Search">🔍</button>
-          <input
-            ref={searchRef}
-            className="search-input"
-            type="text"
-            value={searchInput}
-            onChange={handleSearchChange}
-            onKeyDown={handleSearchKeyDown}
-            placeholder="Search models or type @ to filter: @fertility<2 @unk_ratio<0.01 ..."
-            autoComplete="off"
+    <>
+      <section className="page-intro">
+        <h1>Which tokenizer handles your language best?</h1>
+        <p>
+          Fewer tokens per word means cheaper, faster models that see more of the text.
+          Pick a language to rank every tokenizer on it.
+        </p>
+      </section>
+
+      <section className="filters" aria-label="Filters">
+        {langs ? (
+          <LanguagePicker
+            languages={langs.languages}
+            nAfrican={langs.n_african}
+            value={lang}
+            onChange={(c) => {
+              setLang(c)
+              const l = langs.languages.find((x) => x.code === c)
+              if (c !== ALL && domain !== 'all' && !l?.domains.includes(domain)) setDomain('all')
+            }}
           />
-          {suggestions.length > 0 && (
-            <div className="search-suggestions" ref={suggestionsRef}>
-              {suggestions.map((s, i) => (
-                <div
-                  key={s.field}
-                  className={`search-suggestion${i === activeSuggestion ? ' search-suggestion--active' : ''}`}
-                  onMouseDown={(e) => { e.preventDefault(); insertSuggestion(s.field) }}
-                  onMouseEnter={() => setActiveSuggestion(i)}
-                >
-                  <span className="search-suggestion__field">@{s.field}</span>
-                  <span className="search-suggestion__desc">{s.description}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <button type="button" className="btn btn--icon" onClick={handleClearSearch} title="Clear search">
-          ✕
-        </button>
-        <button
-          type="button"
-          className={`btn btn--icon${showFilterHelp ? ' btn--primary' : ''}`}
-          onClick={() => setShowFilterHelp(!showFilterHelp)}
-          title="Filter syntax help"
-        >
-          ?
-        </button>
-      </form>
-
-      {/* Filter help overlay */}
-      {showFilterHelp && (
-        <>
-          <div className="filter-help-backdrop" onClick={() => setShowFilterHelp(false)} />
-          <div className="filter-help-overlay">
-            <div className="filter-help-panel__header">
-              <strong>Filter Syntax Help</strong>
-              <button className="btn btn--ghost btn--sm" onClick={() => setShowFilterHelp(false)}>✕ Close</button>
-            </div>
-            <div className="filter-help-panel__body markdown">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {metadata.filter_help_text}
-              </ReactMarkdown>
-            </div>
-          </div>
-        </>
-      )}
-
-      {searchError && <div className="search-validation">❌ {searchError}</div>}
-
-      {/* Active filter chips */}
-      {filterChips.length > 0 && (
-        <div className="filter-chips">
-          {filterChips.map((chip) => (
-            <span key={chip} className="search-tag">
-              <span className="search-tag__text">{chip}</span>
-              <button
-                type="button"
-                className="search-tag__remove"
-                onClick={() => handleRemoveChip(chip)}
-                title={`Remove filter ${chip}`}
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Examples — collapsed by default */}
-      <div className="examples-section">
-        <button
-          type="button"
-          className="examples-toggle"
-          onClick={() => setShowExamples((s) => !s)}
-        >
-          Examples {showExamples ? '▴' : '▾'}
-        </button>
-        {showExamples && (
-          <div className="example-filters">
-            {EXAMPLES.map((ex) => (
-              <button
-                key={ex}
-                className="example-pill"
-                onClick={() => handleExampleClick(ex)}
-              >
-                {ex}
-              </button>
-            ))}
-          </div>
+        ) : (
+          <div className="field picker"><span className="field-label">Language</span><div className="skeleton" style={{ height: 44 }} /></div>
         )}
-      </div>
-
-      {/* Language tabs — full width, all tabs visible */}
-      <div className="lang-tabs-row">
-        <div className="lang-tabs">
-          {langTabs.map((tab) => {
-            const isLangLoading = tab.code !== 'multilingual' && data != null && !(tab.code in (data.lang_dfs ?? {}))
-            return (
-              <button
-                key={tab.code}
-                className={`lang-tab${activeLanguage === tab.code ? ' lang-tab--active' : ''}${isLangLoading ? ' lang-tab--loading' : ''}`}
-                onClick={() => setActiveLanguage(tab.code)}
-                title={isLangLoading ? 'Loading...' : undefined}
-              >
-                {tab.name}
-                {isLangLoading && <span className="lang-tab__spinner" />}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Hide duplicates + count — below the tabs */}
-      <div className="tabs-meta-row">
-        <div className="toggle-inline" onClick={handleHideDuplicates}>
-          <div className={`toggle${localFilters.hide_duplicates ? ' toggle--active' : ''}`}>
-            <div className="toggle__knob" />
-          </div>
-          <span>Hide duplicates by Tokenizer Hash</span>
-        </div>
-        <div className="count-badge">
-          {currentCounts.filtered} filtered of {currentCounts.total}
-        </div>
-      </div>
-
-      {/* Multilingual note */}
-      {isMultilingual && (
-        <div className="multilingual-note">
-          ¹ Multilingual metrics are averaged across all selected languages, balanced regardless of dataset size.
-        </div>
-      )}
-
-      {/* Always-visible filter bar */}
-      <div className="filter-bar">
-        {isMultilingual && (
-          <div className="filter-section">
-            <div className="filter-section__header">
-              <span className="filter-section__title">Languages</span>
-              <div className="filter-section__actions">
-                <button className="btn btn--ghost btn--sm" onClick={handleSelectAllLangs}>
-                  Select All
-                </button>
-                <button className="btn btn--ghost btn--sm" onClick={handleClearAllLangs}>
-                  Clear
-                </button>
-              </div>
-            </div>
-            <div className="chip-grid">
-              {metadata.language_tabs.map((lang) => {
-                const active = filters.selected_langs.includes(lang.code)
-                return (
-                  <button
-                    key={lang.code}
-                    className={`chip${active ? ' chip--active' : ''}`}
-                    onClick={() => handleLanguageToggle(lang.code)}
-                  >
-                    <span className="chip__check" />
-                    {lang.name}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        <div className="filter-section">
-          <div className="filter-section__header">
-            <span className="filter-section__title">
-              {isMultilingual
-                ? 'Domains'
-                : `${langTabs.find((l) => l.code === activeLanguage)?.name || ''} Domains`}
-            </span>
-            <div className="filter-section__actions">
-              <button className="btn btn--ghost btn--sm" onClick={handleSelectAllDomains}>
-                Select All
-              </button>
-              <button className="btn btn--ghost btn--sm" onClick={handleClearAllDomains}>
-                Clear
-              </button>
-            </div>
-          </div>
-          <div className="chip-grid">
-            {currentDomains.map(([pretty, name]) => {
-              const active = selectedDomains.includes(name)
+        <div className="field">
+          <span className="field-label" id="domain-label">Text domain</span>
+          <div className="segmented" role="group" aria-labelledby="domain-label">
+            {DOMAINS.map((d) => {
+              const disabled = d.id !== 'all' && availableDomains !== null && !availableDomains.has(d.id)
               return (
                 <button
-                  key={name}
-                  className={`chip${active ? ' chip--active' : ''}`}
-                  onClick={() => handleDomainToggle(name)}
+                  key={d.id}
+                  aria-pressed={domain === d.id}
+                  disabled={disabled}
+                  title={disabled ? `No ${d.label} text for this language` : undefined}
+                  onClick={() => setDomain(d.id)}
                 >
-                  <span className="chip__check" />
-                  {pretty}
+                  {d.label}
                 </button>
               )
             })}
           </div>
         </div>
+        <div className="field">
+          <label htmlFor="rank-by" className="field-label">Rank by</label>
+          <select id="rank-by" className="select" value={rankBy} onChange={(e) => setRankBy(e.target.value as RankBy)}>
+            {RANK_BY.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+          </select>
+        </div>
+      </section>
+
+      <div className="table-head">
+        <h2>{title} · {domainLabel === 'all' ? 'all domains' : domainLabel} · {sorted ? `${sorted.length} tokenizers` : 'loading…'}</h2>
       </div>
 
-      {/* Data Table */}
-      <details className="col-visibility-accordion">
-        <summary className="col-visibility-summary">
-          <span className="col-visibility-summary__label">Column Visibility</span>
-          <span className="col-visibility-summary__count">
-            {columns.length - 1} of {allColumns.length - 1} shown
-          </span>
-        </summary>
-        <div className="col-visibility-body">
-          <div className="col-visibility-actions">
-            <button className="btn btn--ghost btn--sm" onClick={handleShowDefault}>
-              Restore defaults
-            </button>
-            <button className="btn btn--ghost btn--sm" onClick={handleShowAll}>
-              Show all
-            </button>
-          </div>
-          {/* Main columns */}
-          <div className="col-visibility-section">
-            <div className="col-visibility-section__title">Main</div>
-            <div className="col-visibility-grid">
-              {allColumns.filter((c) => c.key !== 'model' && defaultVisibleSet.has(c.key)).map((col) => {
-                const checked = visibleColumns.has(col.key)
-                const desc = (metadata.column_descriptions || {})[col.key]
-                return (
-                  <label key={col.key} className="col-visibility-item" title={desc}>
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => handleToggleColumn(col.key)}
-                    />
-                    <span className="col-visibility-item__emoji">{col.emoji}</span>
-                    <span className="col-visibility-item__label">{col.label}</span>
-                  </label>
-                )
-              })}
-            </div>
-          </div>
+      {error && <div className="notice error" role="alert">{error}</div>}
+      {sorted && sorted.length === 0 && <div className="notice info">No results yet for this selection.</div>}
 
-          {/* Experimental columns */}
-          <div className="col-visibility-section">
-            <div className="col-visibility-section__title">Experimental</div>
-            <div className="col-visibility-grid">
-              {allColumns.filter((c) => c.key !== 'model' && !defaultVisibleSet.has(c.key)).map((col) => {
-                const checked = visibleColumns.has(col.key)
-                const desc = (metadata.column_descriptions || {})[col.key]
-                return (
-                  <label key={col.key} className="col-visibility-item col-visibility-item--experimental" title={desc}>
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => handleToggleColumn(col.key)}
-                    />
-                    <span className="col-visibility-item__emoji">{col.emoji}</span>
-                    <span className="col-visibility-item__label">{col.label}</span>
-                  </label>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </details>
-
-      {/* Data Table */}
-      <LeaderboardTable
-        data={dedupedData}
-        columns={columns}
-        loading={loading || isTabLoading}
-        isMultilingual={isMultilingual}
-        avgColumns={metadata.avg_multilingual_columns || []}
-        columnDescriptions={metadata.column_descriptions || {}}
-      />
-
-      {/* Footer */}
-      <div className="table-footer">
-        <div className="table-footer__note">
-          {currentCounts.total > 0 && (
-            <>Showing {currentCounts.filtered} of {currentCounts.total} tokenizers</>
-          )}
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button className="btn" onClick={handleDownloadCSV} disabled={!dedupedData.length}>
-            📥 Download CSV
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" style={{ width: 48 }}>#</th>
+              <th scope="col">Tokenizer</th>
+              <th scope="col" style={{ width: 260 }}>Tokens / word ↓</th>
+              <th scope="col" className="num">Parity vs EN ↓</th>
+              <th scope="col" className="num">Bytes / token ↑</th>
+              <th scope="col" className="num">Vocab</th>
+            </tr>
+          </thead>
+          <tbody>
+            {!visible && Array.from({ length: 8 }, (_, i) => (
+              <tr key={i}>{Array.from({ length: 6 }, (__, j) => <td key={j}><div className="skeleton" /></td>)}</tr>
+            ))}
+            {visible?.map((r, i) => (
+              <Fragment key={r.model}>
+                <tr
+                  className={`row${i === 0 ? ' best' : ''}`}
+                  aria-expanded={open === r.model}
+                  onClick={() => setOpen(open === r.model ? null : r.model)}
+                >
+                  <td className="mono muted">{i + 1}</td>
+                  <td>
+                    <button className="row-button" aria-expanded={open === r.model} aria-label={`${r.name}: show details`}>
+                      <div className="row-name">{r.name}</div>
+                      <div className="row-sub">{[r.org, r.algorithm].filter(Boolean).join(' · ')}</div>
+                    </button>
+                  </td>
+                  <td>
+                    <div className="bar-cell">
+                      <span className="bar-value">{fmt(r.fertility)}</span>
+                      <div className="bar-track" aria-hidden="true">
+                        <div className="bar-fill" style={{ width: `${Math.round(((r.fertility ?? 0) / maxFert) * 100)}%` }} />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="num mono">{fmt(r.parity)}</td>
+                  <td className="num mono">{fmt(r.bytes_per_token, 1)}</td>
+                  <td className="num mono muted">{fmtInt(r.vocab_size)}</td>
+                </tr>
+                {open === r.model && (
+                  <tr><td colSpan={6} style={{ padding: 0 }}><Detail model={r.model} lang={lang} /></td></tr>
+                )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="table-foot">
+        <span>Click a row for per-domain scores and its best and worst languages.</span>
+        {sorted && sorted.length > PAGE_SIZE && (
+          <button className="link-button" onClick={() => setShowAll(!showAll)}>
+            {showAll ? 'Show top 25' : `Show all ${sorted.length} tokenizers`}
           </button>
-          <button className="btn" onClick={onRefresh} disabled={loading}>
-            🔄 Refresh & Reset
-          </button>
+        )}
+      </div>
+
+      <section className="guide" aria-label="Metric guide">
+        <div className="card">
+          <div className="card-title">Tokens per word</div>
+          <div className="card-text">How many pieces an average word is split into. 1.0 means whole words.</div>
+        </div>
+        <div className="card">
+          <div className="card-title">Parity vs English</div>
+          <div className="card-text">Tokens for the same Bible verses, divided by the English count. 1.0 means as cheap as English.</div>
+        </div>
+        <div className="card">
+          <div className="card-title">Bytes per token</div>
+          <div className="card-text">How much text each token carries. Higher means more compact.</div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+function Detail({ model, lang }: { model: string; lang: string }) {
+  const [d, setD] = useState<TokenizerDetail | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  useEffect(() => {
+    api.tokenizer(model, lang).then(setD).catch((e: Error) => setError(e.message))
+  }, [model, lang])
+  if (error) return <div className="detail"><div className="notice error">{error}</div></div>
+  if (!d) return <div className="detail"><div className="skeleton" style={{ width: '40%' }} /></div>
+  const isLocal = model.startsWith('tokenizers/')
+  return (
+    <div className="detail">
+      <div className="detail-grid">
+        <div>
+          <h3>Tokens per word by domain</h3>
+          <ul>
+            {d.domains.map((x) => (
+              <li key={x.domain}><span style={{ textTransform: 'capitalize' }}>{x.domain}</span><span className="mono">{fmt(x.fertility)}</span></li>
+            ))}
+          </ul>
+          <p className="muted" style={{ fontSize: 13, margin: '12px 0 0' }}>
+            {isLocal ? model.replace('tokenizers/', '') : <a href={`https://huggingface.co/${model}`} target="_blank" rel="noreferrer">{model}</a>}
+            {d.vocab_size != null && <> · {d.vocab_size.toLocaleString('en-US')} tokens</>}
+          </p>
+        </div>
+        <div>
+          <h3>Best African languages</h3>
+          <ol>
+            {d.best_languages.map((x) => <li key={x.code}><span>{x.name}</span><span className="mono">{fmt(x.fertility)}</span></li>)}
+          </ol>
+        </div>
+        <div>
+          <h3>Hardest African languages</h3>
+          <ol>
+            {d.worst_languages.map((x) => <li key={x.code}><span>{x.name}</span><span className="mono">{fmt(x.fertility)}</span></li>)}
+          </ol>
         </div>
       </div>
     </div>

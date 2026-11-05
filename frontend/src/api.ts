@@ -1,89 +1,52 @@
 import type {
-  Metadata,
-  FilterState,
-  LeaderboardResponse,
-  LangResponse,
-  MultilingualResponse,
-  BattleResponse,
-  SubmitResponse,
-  WorkerStatus,
+  CompareResponse,
+  LanguagesResponse,
+  RankingResponse,
+  TokenizerDetail,
 } from './types'
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(path, options)
   if (!res.ok) {
     const text = await res.text().catch(() => '')
-    throw new Error(`API ${res.status}: ${text || res.statusText}`)
+    throw new Error(text || `${res.status} ${res.statusText}`)
   }
   return res.json()
 }
 
-function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+function post<T>(path: string, body: unknown): Promise<T> {
   return request<T>(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
-    signal,
   })
 }
 
+const q = (params: Record<string, string>) => new URLSearchParams(params).toString()
+
 export const api = {
-  health: () =>
-    request<{ status: string; initialized: boolean }>('/api/health'),
+  languages: () => request<LanguagesResponse>('/api/v2/languages'),
 
-  metadata: () => request<Metadata>('/api/metadata'),
+  ranking: (lang: string, domain: string, signal?: AbortSignal) =>
+    request<RankingResponse>(`/api/v2/ranking?${q({ lang, domain })}`, { signal }),
 
-  leaderboardInit: () => request<LeaderboardResponse>('/api/leaderboard/init'),
+  tokenizer: (name: string, lang: string) =>
+    request<TokenizerDetail>(`/api/v2/tokenizer?${q({ name, lang })}`),
 
-  leaderboard: (filters: FilterState, signal?: AbortSignal) =>
-    post<LeaderboardResponse>('/api/leaderboard', {
-      selected_langs: filters.selected_langs,
-      selected_domains: filters.selected_domains,
-      selected_multilingual_domains: filters.selected_multilingual_domains,
-    }, signal),
-
-  refreshLeaderboard: () =>
-    post<LeaderboardResponse>('/api/leaderboard/refresh', {}),
-
-  leaderboardLang: (langCode: string, selectedDomains: string[], signal?: AbortSignal) =>
-    post<LangResponse>(`/api/leaderboard/lang/${langCode}`, {
-      selected_domains: selectedDomains,
-    }, signal),
-
-  leaderboardMultilingual: (selectedLangs: string[], selectedMultilingualDomains: string[], signal?: AbortSignal) =>
-    post<MultilingualResponse>('/api/leaderboard/multilingual', {
-      selected_langs: selectedLangs,
-      selected_multilingual_domains: selectedMultilingualDomains,
-    }, signal),
-
-  submitModel: (data: {
-    model_name: string
-    revision: string
-    subfolder?: string
-    target_mode: boolean
-    selected_langs?: string[]
-  }) => post<SubmitResponse>('/api/submit', data),
-
-  workerStatus: () => request<WorkerStatus>('/api/worker/status'),
-
-  battleTokenize: (data: {
-    text: string
-    model_selection_1: string
-    model_selection_2: string
-    better_tokenization: boolean
-  }) => post<BattleResponse>('/api/battle/tokenize', data),
-
-  validateSearch: (query: string) =>
-    post<{ is_valid: boolean; error_message: string }>(
-      '/api/search/validate',
-      { query },
-    ),
-
-  domainsForLanguages: (codes: string[]) =>
-    post<{ domains: [string, string][] }>('/api/domains/for-languages', {
-      selected_lang_codes: codes,
+  compare: (text: string, a: string, b: string) =>
+    post<CompareResponse>('/api/battle/tokenize', {
+      text,
+      model_selection_1: a,
+      model_selection_2: b,
+      better_tokenization: false,
     }),
 
-  content: (page: string) =>
-    request<{ content: string }>(`/api/content/${page}`),
+  submit: (modelName: string, revision: string) =>
+    post<{ message: string }>('/api/submit', {
+      model_name: modelName,
+      revision: revision || 'main',
+      target_mode: false,
+    }),
+
+  content: (page: string) => request<{ content: string }>(`/api/content/${page}`),
 }

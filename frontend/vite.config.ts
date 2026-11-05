@@ -10,12 +10,5 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          tanstack: ['@tanstack/react-virtual'],
-        },
-      },
-    },
   },
 })

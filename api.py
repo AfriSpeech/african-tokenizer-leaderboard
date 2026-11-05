@@ -32,6 +32,7 @@ from results_aggregator import (
     load_all_model_results,
 )
 from submit import SubmissionWorker
+import api_v2
 from search_filter import search_filter
 from env import APP_VERSION, LIMIT_MODELS_SHOW
 from battle import (
@@ -1022,6 +1023,7 @@ async def lifespan(application: FastAPI):
     print("API lifespan: default filter result cached.")
 
     _preserialize_defaults(default_filter_state, default_compute_result)
+    api_v2.configure(dataset_meta, _GLOBAL_CACHE.raw_results_df, _GLOBAL_CACHE._data_version)
 
     print("API lifespan: starting SubmissionWorker...")
     submission_worker = SubmissionWorker(
@@ -1065,7 +1067,8 @@ def _cached_response(request: Request, raw: bytes, gzipped: bytes) -> Response:
 # FastAPI application
 # ---------------------------------------------------------------------------
 
-app = FastAPI(title="Tokenizer Leaderboard API", lifespan=lifespan)
+app = FastAPI(title="African Tokenizer Leaderboard API", lifespan=lifespan)
+app.include_router(api_v2.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -1134,6 +1137,7 @@ async def leaderboard_refresh(request: Request):
     _GLOBAL_CACHE.default_filter_state = default_filter_state
     _GLOBAL_CACHE.default_compute_result = default_compute_result
     _preserialize_defaults(default_filter_state, default_compute_result)
+    api_v2.configure(dataset_meta, _GLOBAL_CACHE.raw_results_df, _GLOBAL_CACHE._data_version)
     return _cached_response(request, _GLOBAL_CACHE._json_leaderboard_init, _GLOBAL_CACHE._gz_leaderboard_init)
 
 
