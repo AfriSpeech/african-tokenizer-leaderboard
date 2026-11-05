@@ -191,9 +191,15 @@ def main() -> None:
     ap.add_argument("--words-per-domain", type=int, default=200_000)
     ap.add_argument("--parity-verses", type=int, default=2_000)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--refs", nargs="*", default=["en", "fr", "ar", "pt", "es"],
+                    help="high-resource reference languages (corpora reference caches)")
+    ap.add_argument("--refs-only", action="store_true",
+                    help="only (re)build the reference languages, merged into OUT's meta")
     args = ap.parse_args()
     out: Path = args.out
     budget = args.words_per_domain
+    global PARITY_VERSES
+    PARITY_VERSES = args.parity_verses
 
     jw = use_repo(JW_REPO)
     web = use_repo(WEB_REPO)
@@ -201,6 +207,20 @@ def main() -> None:
     english_rows = read_csv_rows(hf_hub_download(BIBLE_REPO, "english_cache.csv",
                                                  repo_type="dataset"))
     english = {r["verse_key"]: r["eng"].strip() for r in english_rows if r.get("eng")}
+
+    if args.refs_only:
+        meta_path = out / "dataset_meta.yaml"
+        meta = yaml.safe_load(meta_path.read_text()) if meta_path.exists() else {}
+        for m in meta.values():
+            m.setdefault("group", "african")
+        meta.update(reference_languages(args.refs, out, budget, args.seed, english))
+        table = []
+        if (out / "languages.csv").exists():
+            with open(out / "languages.csv", newline="", encoding="utf-8") as f:
+                table = [{k: v for k, v in r.items() if k != "group"} for r in csv.DictReader(f)
+                         if r.get("group", "african") == "african"]
+        write_outputs(out, meta, table)
+        return
 
     codes = args.langs or sorted(bible)
     meta: dict[str, dict] = {}
@@ -230,8 +250,8 @@ def main() -> None:
             except Exception as exc:  # one bad source file must not stop the whole build
                 print(f"  {code}: skipping {dom} ({type(exc).__name__}: {exc})", flush=True)
 
-        entry = {"name": code, "pretty_name": base_name(lang), "domains": [],
-                 "parities": []}
+        entry = {"name": code, "pretty_name": base_name(lang), "group": "african",
+                 "domains": [], "parities": []}
         for dom, (docs, sources) in domains.items():
             if not docs:
                 continue
@@ -242,23 +262,9 @@ def main() -> None:
                                      "hf_datasets": sources})
 
         verses = {r["verse_key"]: r["local"].strip() for r in rows}
-        shared = sorted(set(verses) & set(english), key=ac._verse_sort_key)
-        random.Random(args.seed).shuffle(shared)
-        shared = sorted(shared[: args.parity_verses], key=ac._verse_sort_key)
-        if shared:
-            tgt = [verses[k] for k in shared]
-            ref = [english[k] for k in shared]
-            write_jsonl_gz(out / f"{code}/parity.jsonl.gz", tgt)
-            write_jsonl_gz(out / f"en/parity_{code}.jsonl.gz", ref)
-            t, r = stats(tgt), stats(ref)
-            entry["parities"].append({
-                "filepath": f"{code}/parity.jsonl.gz", "name": "parity_en",
-                "pretty_name": "Parity (English)", **t,
-                "reference_filepath": f"en/parity_{code}.jsonl.gz", "reference_lang": "en",
-                "reference_lang_pretty_name": "English",
-                "reference_word_count": r["word_count"], "reference_char_count": r["char_count"],
-                "reference_byte_count": r["byte_count"], "hf_datasets": [BIBLE_REPO],
-            })
+        if set(verses) & set(english):
+            entry["parities"].append(parity_entry(code, verses, english, out, args.seed))
+        shared = entry["parities"][0]["n_docs"] if entry["parities"] else 0
         totals = defaultdict(int)
         for d in entry["domains"]:
             for k in ("n_docs", "word_count", "char_count", "byte_count"):
@@ -268,35 +274,118 @@ def main() -> None:
         table.append({"code": code, "name": entry["pretty_name"], "sentences": sentences,
                       "bible_file": main_file, "domains": "+".join(domains)})
         print(f"[{n}/{len(codes)}] {code} ({entry['pretty_name']}): {sentences} sentences, "
-              f"domains {list(domains)}, parity {len(shared)}", flush=True)
+              f"domains {list(domains)}, parity {shared}", flush=True)
 
-    # English reference language: Bible + Watchtower English.
-    en_docs = {"bible": (sample_to_words(chapter_docs(english_rows, "eng"), budget, args.seed),
-                         [BIBLE_REPO])}
-    jw_en = read_csv_rows(hf_hub_download(JW_REPO, "english_cache.csv", repo_type="dataset"))
-    arts: dict[str, list[str]] = defaultdict(list)
-    for r in jw_en:
-        if (r.get("eng") or "").strip():
-            arts[r["verse_key"].split("#", 1)[0]].append(r["eng"].strip())
-    en_docs["watchtower"] = (sample_to_words(["\n".join(v) for v in arts.values()], budget,
-                                             args.seed), [JW_REPO])
-    en = {"name": "en", "pretty_name": "English", "domains": [], "parities": None}
-    for dom, (docs, sources) in en_docs.items():
-        write_jsonl_gz(out / f"en/{dom}.jsonl.gz", docs)
-        en["domains"].append({"filepath": f"en/{dom}.jsonl.gz", "name": dom,
-                              "pretty_name": DOMAIN_PRETTY[dom], **stats(docs),
-                              "hf_datasets": sources})
-    for k in ("n_docs", "word_count", "char_count", "byte_count"):
-        en[k] = sum(d[k] for d in en["domains"])
-    meta["en"] = en
+    meta.update(reference_languages(args.refs, out, budget, args.seed, english))
+    write_outputs(out, meta, table)
 
+
+def write_outputs(out: Path, meta: dict[str, dict], table: list[dict]) -> None:
     (out / "dataset_meta.yaml").write_text(yaml.safe_dump(meta, allow_unicode=True,
                                                           sort_keys=True))
     with open(out / "languages.csv", "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=["code", "name", "sentences", "bible_file", "domains"])
+        w = csv.DictWriter(f, fieldnames=["code", "name", "group", "sentences", "bible_file",
+                                          "domains"])
         w.writeheader()
-        w.writerows(table)
-    print(f"done: {len(meta) - 1} African languages + English -> {out}")
+        for row in table:
+            w.writerow({"group": "african", **row})
+        for code, m in meta.items():
+            if m.get("group") == "high_resource":
+                w.writerow({"code": code, "name": m["pretty_name"], "group": "high_resource",
+                            "sentences": "", "bible_file": "",
+                            "domains": "+".join(d["name"] for d in m["domains"])})
+    n_af = sum(1 for m in meta.values() if m.get("group") != "high_resource")
+    print(f"done: {n_af} African + {len(meta) - n_af} high-resource languages -> {out}")
+
+
+ARABIC_DIACRITICS = re.compile("[\u064B-\u0652\u0670]")
+
+
+def reference_languages(codes: list[str], out: Path, budget: int, seed: int,
+                        english: dict[str, str]) -> dict[str, dict]:
+    """High-resource languages spoken widely in Africa, from the corpora's reference caches:
+    Bible (africa-corpus) + Watchtower (african-corpus-jw), parity vs English on the Bible.
+    Arabic uses the least vowel-marked Bible translation (modern text is unvowelled)."""
+    bible_ref = {lang.code: lang for lang in use_repo_reference(BIBLE_REPO)}
+    jw_ref = {lang.code: lang for lang in use_repo_reference(JW_REPO)}
+    pretty = {"en": "English", "fr": "French", "ar": "Arabic", "pt": "Portuguese",
+              "es": "Spanish"}
+    meta: dict[str, dict] = {}
+    for code in codes:
+        domains: dict[str, tuple[list[str], list[str]]] = {}
+        verses: dict[str, str] = {}
+        if code == "en":
+            rows = read_csv_rows(hf_hub_download(BIBLE_REPO, "english_cache.csv",
+                                                 repo_type="dataset"))
+            domains["bible"] = (sample_to_words(chapter_docs(rows, "eng"), budget, seed),
+                                [BIBLE_REPO])
+        elif code in bible_ref:
+            versions = []
+            for rel in bible_ref[code].files:
+                rows = [r for r in read_csv_rows(hf_hub_download(BIBLE_REPO, rel,
+                                                                 repo_type="dataset"))
+                        if (r.get("text") or "").strip()]
+                marks = sum(len(ARABIC_DIACRITICS.findall(r["text"])) for r in rows[:2000])
+                versions.append((marks if code == "ar" else 0, -len(rows), rel, rows))
+            versions.sort(key=lambda v: (v[0], v[1]))
+            rows = versions[0][3]
+            print(f"  {code}: Bible {versions[0][2]} ({len(rows)} verses)", flush=True)
+            domains["bible"] = (sample_to_words(chapter_docs(rows, "text"), budget, seed),
+                                [BIBLE_REPO])
+            verses = {r["verse_key"]: r["text"].strip() for r in rows}
+        if code in jw_ref:
+            col = "eng" if code == "en" else "text"
+            arts: dict[str, list[str]] = defaultdict(list)
+            for rel in jw_ref[code].files:
+                for r in read_csv_rows(hf_hub_download(JW_REPO, rel, repo_type="dataset")):
+                    if (r.get(col) or "").strip():
+                        arts[r["verse_key"].split("#", 1)[0]].append(r[col].strip())
+            domains["watchtower"] = (sample_to_words(["\n".join(v) for v in arts.values()],
+                                                     budget, seed), [JW_REPO])
+        entry: dict = {"name": code, "pretty_name": pretty.get(code, code),
+                       "group": "high_resource", "domains": [], "parities": None}
+        for dom, (docs, sources) in domains.items():
+            write_jsonl_gz(out / f"{code}/{dom}.jsonl.gz", docs)
+            entry["domains"].append({"filepath": f"{code}/{dom}.jsonl.gz", "name": dom,
+                                     "pretty_name": DOMAIN_PRETTY[dom], **stats(docs),
+                                     "hf_datasets": sources})
+        if verses and code != "en":
+            entry["parities"] = [parity_entry(code, verses, english, out, seed)]
+        for k in ("n_docs", "word_count", "char_count", "byte_count"):
+            entry[k] = sum(d[k] for d in entry["domains"])
+        meta[code] = entry
+        print(f"  {code} ({entry['pretty_name']}): domains {list(domains)}, "
+              f"parity {'yes' if entry['parities'] else 'no'}", flush=True)
+    return meta
+
+
+def use_repo_reference(repo: str) -> list["ac.Language"]:
+    ac.HF_REPO_ID = repo
+    ac.refresh()
+    return ac.list_languages()[1]
+
+
+PARITY_VERSES = 2_000
+
+
+def parity_entry(code: str, verses: dict[str, str], english: dict[str, str], out: Path,
+                 seed: int) -> dict:
+    shared = sorted(set(verses) & set(english), key=ac._verse_sort_key)
+    random.Random(seed).shuffle(shared)
+    shared = sorted(shared[:PARITY_VERSES], key=ac._verse_sort_key)
+    tgt = [verses[k] for k in shared]
+    ref = [english[k] for k in shared]
+    write_jsonl_gz(out / f"{code}/parity.jsonl.gz", tgt)
+    write_jsonl_gz(out / f"en/parity_{code}.jsonl.gz", ref)
+    t, r = stats(tgt), stats(ref)
+    return {
+        "filepath": f"{code}/parity.jsonl.gz", "name": "parity_en",
+        "pretty_name": "Parity (English)", **t,
+        "reference_filepath": f"en/parity_{code}.jsonl.gz", "reference_lang": "en",
+        "reference_lang_pretty_name": "English",
+        "reference_word_count": r["word_count"], "reference_char_count": r["char_count"],
+        "reference_byte_count": r["byte_count"], "hf_datasets": [BIBLE_REPO],
+    }
 
 
 if __name__ == "__main__":
