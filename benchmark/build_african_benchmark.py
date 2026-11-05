@@ -379,7 +379,9 @@ def parity_entry(code: str, verses: dict[str, str], english: dict[str, str], out
     write_jsonl_gz(out / f"en/parity_{code}.jsonl.gz", ref)
     t, r = stats(tgt), stats(ref)
     return {
-        "filepath": f"{code}/parity.jsonl.gz", "name": "parity_en",
+        # Unique per language: each language has its own English reference (Bibles cover
+        # different verses); results_aggregator reports it as the "parity_en" column.
+        "filepath": f"{code}/parity.jsonl.gz", "name": f"parity_en__{code}",
         "pretty_name": "Parity (English)", **t,
         "reference_filepath": f"en/parity_{code}.jsonl.gz", "reference_lang": "en",
         "reference_lang_pretty_name": "English",

@@ -390,11 +390,24 @@ def calculate_parity_scores_vectorized(df_parity: pd.DataFrame):
     if model_parity_df.empty or reference_parity_df.empty:
         return pd.DataFrame()
     
-    # Create a lookup for reference tokens by domain
-    reference_lookup = reference_parity_df.set_index('domain')['total_tokens'].to_dict()
-    
-    # Calculate parity scores vectorized
-    model_parity_df['reference_tokens'] = model_parity_df['domain'].map(reference_lookup)
+    # Reference tokens per (tokenizer, parity set): each tokenizer splits the reference text
+    # differently, and a benchmark may give each language its own parallel reference
+    # ("parity_en__twi": Twi verses vs the same verses in English). Keys without model_key
+    # fall back to the parity set alone (one shared reference file, as with FLORES).
+    if 'model_key' in df_parity.columns and df_parity['model_key'].notna().all():
+        reference_lookup = (
+            reference_parity_df.groupby(['model_key', 'domain'])['total_tokens'].first().to_dict()
+        )
+        model_parity_df['reference_tokens'] = [
+            reference_lookup.get((k, d)) for k, d in
+            zip(model_parity_df['model_key'], model_parity_df['domain'])
+        ]
+    else:
+        reference_lookup = reference_parity_df.groupby('domain')['total_tokens'].first().to_dict()
+        model_parity_df['reference_tokens'] = model_parity_df['domain'].map(reference_lookup)
+    model_parity_df['reference_tokens'] = pd.to_numeric(
+        model_parity_df['reference_tokens'], errors='coerce'
+    )
     
     # Calculate parity ratio (model_tokens / reference_tokens)
     parity_ratio = model_parity_df['total_tokens'].divide(model_parity_df['reference_tokens']).replace(np.inf, np.nan)
@@ -402,8 +415,11 @@ def calculate_parity_scores_vectorized(df_parity: pd.DataFrame):
     model_parity_df['parity_value'] = model_parity_df['parity_value'].fillna(0)
     
     # Add 'parity_' prefix to domain names if not already present
+    # "parity_en__twi" (a per-language parity set) reports as the "parity_en" column.
     model_parity_df['parity_column'] = model_parity_df['domain'].apply(
-        lambda x: x if x.startswith('parity_') else f'parity_{x}'
+        lambda x: (lambda base: base if base.startswith('parity_') else f'parity_{base}')(
+            x.split('__', 1)[0]
+        )
     )
     
     # Pivot to create parity columns
