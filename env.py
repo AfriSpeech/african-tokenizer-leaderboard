@@ -12,8 +12,8 @@ DATA_DIR = os.environ.get("DATA_DIR", "./data")
 os.makedirs(DATA_DIR, exist_ok=True)
 #os.environ["HF_HOME"] = DATA_DIR
 
-HF_REPO_RESULTS = os.environ.get("HF_REPO_RESULTS", "eduagarcia/tokenizer_benchmark_results")
-HF_REPO_BENCHMARK = os.environ.get("HF_REPO_BENCHMARK", "eduagarcia/multilingual_tokenizer_benchmark")
+HF_REPO_RESULTS = os.environ.get("HF_REPO_RESULTS", "AfriSpeech/african-tokenizer-results")
+HF_REPO_BENCHMARK = os.environ.get("HF_REPO_BENCHMARK", "AfriSpeech/african-tokenizer-benchmark")
 LIMIT_MODELS_SHOW = int(os.environ.get("LIMIT_MODELS_SHOW")) if os.environ.get("LIMIT_MODELS_SHOW") is not None else None
 
 # Relative to DATA_DIR, EX: DATA_DIR/DEFAULT_BENCHMARK_PATH
