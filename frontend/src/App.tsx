@@ -9,7 +9,7 @@ import About from './components/About'
 const PAGES: { id: Page; label: string }[] = [
   { id: 'leaderboard', label: 'Leaderboard' },
   { id: 'compare', label: 'Compare' },
-  { id: 'submit', label: 'Submit a tokenizer' },
+  { id: 'submit', label: 'Request a tokenizer' },
   { id: 'about', label: 'About' },
 ]
 

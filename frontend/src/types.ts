@@ -1,5 +1,14 @@
 export type Page = 'leaderboard' | 'compare' | 'submit' | 'about'
 
+export type ModelType = 'decoder' | 'encoder' | 'encoder-decoder' | 'speech'
+
+export const MODEL_TYPES: { id: ModelType; label: string; hint: string }[] = [
+  { id: 'decoder', label: 'Decoder LLM', hint: 'Generative language models (GPT, Llama, Gemma, Qwen…)' },
+  { id: 'encoder', label: 'Encoder', hint: 'BERT-style models (XLM-R, AfroXLMR, Serengeti…)' },
+  { id: 'encoder-decoder', label: 'Encoder–decoder', hint: 'Translation and seq2seq models (NLLB, MADLAD, mT5…)' },
+  { id: 'speech', label: 'Speech', hint: 'Speech recognition and text-to-speech (Whisper, Seamless, Pocket TTS)' },
+]
+
 export interface Language {
   code: string
   name: string
@@ -20,6 +29,7 @@ export interface RankingRow {
   name: string
   org: string
   algorithm: string | null
+  type?: ModelType
   vocab_size: number | null
   fertility: number | null
   parity: number | null
@@ -58,6 +68,7 @@ export interface TokenizerDetail {
   n_langs: number
   best_languages: LangScore[]
   worst_languages: LangScore[]
+  source: string
 }
 
 export interface TokenizedText {
@@ -65,12 +76,6 @@ export interface TokenizedText {
   color_map: Record<string, string>
   count: number
   vocab_size: number | null
-}
-
-export interface CompareResponse {
-  error: string | null
-  model1: TokenizedText
-  model2: TokenizedText
 }
 
 export type RankBy = 'fertility' | 'parity' | 'bytes_per_token'

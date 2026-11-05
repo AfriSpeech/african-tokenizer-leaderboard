@@ -10,3 +10,5 @@ __pycache__/
 .venv/
 .env
 .cache/
+# copied from tokenizers/ at build time
+frontend/public/tokenizers/

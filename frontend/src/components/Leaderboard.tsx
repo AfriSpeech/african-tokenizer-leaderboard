@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
-import type { LanguagesResponse, RankBy, RankingResponse, RankingRow, TokenizerDetail } from '../types'
+import type { LanguagesResponse, ModelType, RankBy, RankingResponse, RankingRow, TokenizerDetail } from '../types'
+import { MODEL_TYPES } from '../types'
 import { api } from '../api'
 import LanguagePicker, { ALL } from './LanguagePicker'
 
@@ -22,6 +23,7 @@ function readParams() {
     langs: lang.split(',').filter(Boolean),
     by: (p.get('by') ?? 'fertility') as RankBy,
     hr: p.get('hr') !== '0',
+    types: (p.get('types') ?? '').split(',').filter((x): x is ModelType => MODEL_TYPES.some((m) => m.id === x)),
   }
 }
 
@@ -30,6 +32,7 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
   const [langs, setLangs] = useState<string[]>(initial.langs)
   const [rankBy, setRankBy] = useState<RankBy>(initial.by)
   const [hr, setHr] = useState(initial.hr)
+  const [types, setTypes] = useState<ModelType[]>(initial.types)
   const [result, setResult] = useState<RankingResponse | null>(null)
   const rows: RankingRow[] | null = result?.rows ?? null
   const [error, setError] = useState<string | null>(null)
@@ -45,9 +48,9 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
   const companions = Object.entries(result?.companions ?? {})
 
   useEffect(() => {
-    const params = new URLSearchParams({ lang, by: rankBy, ...(hr ? {} : { hr: '0' }) })
+    const params = new URLSearchParams({ lang, by: rankBy, ...(hr ? {} : { hr: '0' }), ...(types.length ? { types: types.join(',') } : {}) })
     history.replaceState(null, '', `#/leaderboard?${params}`)
-  }, [lang, rankBy, hr])
+  }, [lang, rankBy, hr, types])
 
   useEffect(() => {
     const ctrl = new AbortController()
@@ -55,11 +58,11 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
     setError(null)
     setOpen(null)
     if (!lang) return
-    api.ranking(lang, hr, ctrl.signal)
-      .then(setResult)
+    api.ranking(lang, hr, types)
+      .then((r) => { if (!ctrl.signal.aborted) setResult(r) })
       .catch((e: Error) => { if (e.name !== 'AbortError') setError(e.message) })
     return () => ctrl.abort()
-  }, [lang, hr])
+  }, [lang, hr, types])
 
   const metric = RANK_BY.find((m) => m.id === rankBy)!
   const sorted = useMemo(() => {
@@ -110,6 +113,22 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
           <select id="rank-by" className="select" value={rankBy} onChange={(e) => setRankBy(e.target.value as RankBy)}>
             {RANK_BY.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
           </select>
+        </div>
+        <div className="field">
+          <span className="field-label" id="type-label">Model type</span>
+          <div className="segmented" role="group" aria-labelledby="type-label">
+            <button aria-pressed={types.length === 0} onClick={() => setTypes([])}>All</button>
+            {MODEL_TYPES.map((m) => (
+              <button
+                key={m.id}
+                title={m.hint}
+                aria-pressed={types.includes(m.id)}
+                onClick={() => setTypes(types.includes(m.id) ? types.filter((x) => x !== m.id) : [...types, m.id])}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
         </div>
         <label className="check">
           <input
@@ -179,7 +198,7 @@ export default function Leaderboard({ langs: info }: { langs: LanguagesResponse 
                   <td>
                     <button className="row-button" aria-expanded={open === r.model} aria-label={`${r.name}: show details`}>
                       <div className="row-name">{r.name}</div>
-                      <div className="row-sub">{[r.org, r.algorithm].filter(Boolean).join(' · ')}</div>
+                      <div className="row-sub">{[r.org, MODEL_TYPES.find((m) => m.id === r.type)?.label, r.algorithm].filter(Boolean).join(' · ')}</div>
                     </button>
                   </td>
                   <td>
@@ -238,7 +257,7 @@ function Detail({ model, lang, hr }: { model: string; lang: string; hr: boolean 
   }, [model, lang, hr])
   if (error) return <div className="detail"><div className="notice error">{error}</div></div>
   if (!d) return <div className="detail"><div className="skeleton" style={{ width: '40%' }} /></div>
-  const isLocal = model.startsWith('tokenizers/')
+  const href = d.source.startsWith('http') ? d.source : `https://huggingface.co/${d.source}`
   return (
     <div className="detail">
       <div className="detail-grid">
@@ -250,7 +269,7 @@ function Detail({ model, lang, hr }: { model: string; lang: string; hr: boolean 
             <li><span>Bytes per token</span><span className="mono">{fmt(d.bytes_per_token, 1)}</span></li>
           </ul>
           <p className="muted" style={{ fontSize: 13, margin: '12px 0 0' }}>
-            {isLocal ? model.replace('tokenizers/', '') : <a href={`https://huggingface.co/${model}`} target="_blank" rel="noreferrer">{model}</a>}
+            <a href={href} target="_blank" rel="noreferrer">{d.source.replace('https://github.com/', '')}</a>
             {d.vocab_size != null && <> · {d.vocab_size.toLocaleString('en-US')} tokens</>}
           </p>
         </div>

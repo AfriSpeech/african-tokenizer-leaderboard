@@ -1,52 +1,66 @@
-import type {
-  CompareResponse,
-  LanguagesResponse,
-  RankingResponse,
-  TokenizerDetail,
-} from './types'
+// The static Space has no server: rankings come from data/leaderboard.json (data.ts) and
+// "Compare" tokenizes in the browser with tokenizers.js (no model runtime needed).
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(path, options)
-  if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    throw new Error(text || `${res.status} ${res.statusText}`)
+import type { LanguagesResponse, ModelType, RankingResponse, TokenizedText, TokenizerDetail } from './types'
+import { BYTES, fromJson, pieces, type LoadedTokenizer } from './tokenize'
+import { loadData, ranking, tokenizerDetail } from './data'
+
+export const SPACE_URL = 'https://huggingface.co/spaces/AfriSpeech/african-tokenizer-leaderboard'
+
+const tokenizers = new Map<string, Promise<LoadedTokenizer>>()
+
+async function fetchJson(url: string, optional = false): Promise<object> {
+  const r = await fetch(url)
+  if (!r.ok) {
+    if (optional) return {}
+    throw new Error(r.status === 404 ? 'no tokenizer.json in this repo' : `HTTP ${r.status}`)
   }
-  return res.json()
+  return r.json()
 }
 
-function post<T>(path: string, body: unknown): Promise<T> {
-  return request<T>(path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
+/** "local:<folder>" = a folder shipped with the Space; "builtin:bytes" = UTF-8 bytes (ByT5);
+ * otherwise a Hub repo id. */
+async function loadTokenizer(browser: string): Promise<LoadedTokenizer> {
+  if (browser === 'builtin:bytes') return BYTES
+  const base = browser.startsWith('local:')
+    ? new URL(`./tokenizers/${browser.slice('local:'.length)}/`, window.location.href).toString()
+    : `https://huggingface.co/${browser}/resolve/main/`
+  const [json, config] = await Promise.all([
+    fetchJson(`${base}tokenizer.json`),
+    fetchJson(`${base}tokenizer_config.json`, true),
+  ])
+  return fromJson(json, config)
 }
 
-const q = (params: Record<string, string>) => new URLSearchParams(params).toString()
+function tokenizerFor(browser: string): Promise<LoadedTokenizer> {
+  let t = tokenizers.get(browser)
+  if (!t) {
+    t = loadTokenizer(browser)
+    t.catch(() => tokenizers.delete(browser))
+    tokenizers.set(browser, t)
+  }
+  return t
+}
 
 export const api = {
-  languages: () => request<LanguagesResponse>('/api/v2/languages'),
+  languages: async (): Promise<LanguagesResponse> => {
+    const d = await loadData()
+    return {
+      languages: d.languages,
+      n_african: d.languages.filter((l) => l.group === 'african').length,
+      data_version: null,
+    }
+  },
 
-  ranking: (lang: string, hr: boolean, signal?: AbortSignal) =>
-    request<RankingResponse>(`/api/v2/ranking?${q({ lang, hr: hr ? 'true' : 'false' })}`, { signal }),
+  ranking: async (lang: string, hr: boolean, types: ModelType[] = []): Promise<RankingResponse> =>
+    ranking(await loadData(), lang, hr, types),
 
-  tokenizer: (name: string, lang: string, hr: boolean) =>
-    request<TokenizerDetail>(`/api/v2/tokenizer?${q({ name, lang, hr: hr ? 'true' : 'false' })}`),
+  tokenizer: async (name: string, lang: string, hr: boolean): Promise<TokenizerDetail> =>
+    tokenizerDetail(await loadData(), name, lang, hr),
 
-  compare: (text: string, a: string, b: string) =>
-    post<CompareResponse>('/api/battle/tokenize', {
-      text,
-      model_selection_1: a,
-      model_selection_2: b,
-      better_tokenization: false,
-    }),
-
-  submit: (modelName: string, revision: string) =>
-    post<{ message: string }>('/api/submit', {
-      model_name: modelName,
-      revision: revision || 'main',
-      target_mode: false,
-    }),
-
-  content: (page: string) => request<{ content: string }>(`/api/content/${page}`),
+  tokenize: async (browser: string, text: string): Promise<TokenizedText> => {
+    const tok = await tokenizerFor(browser)
+    const p = pieces(tok, text)
+    return { highlight_data: p.map((x) => [x, null]), color_map: {}, count: p.length, vocab_size: null }
+  },
 }
