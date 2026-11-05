@@ -1,0 +1,8 @@
+African Tokenizer Leaderboard (AfriSpeech)
+
+Based on the Multilingual Tokenizer Leaderboard by Eduardo A. S. Garcia
+(https://huggingface.co/spaces/eduagarcia/multilingual-tokenizer-leaderboard),
+licensed under the Apache License 2.0. Modified to evaluate tokenizers on
+African languages, using text from the AfriSpeech Africa Corpus.
+
+benchmark/africa_corpus.py is vendored from the Africa Corpus Builder.

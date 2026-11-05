@@ -1,0 +1,12 @@
+# data and build outputs (the benchmark lives in a private HF dataset)
+data/
+benchmark_v*/
+bench_test/
+*.jsonl.gz
+frontend/node_modules/
+frontend/dist/
+__pycache__/
+*.pyc
+.venv/
+.env
+.cache/

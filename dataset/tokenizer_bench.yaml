@@ -1,0 +1,1066 @@
+output_dir: "test_tokenizer_bench_v1"
+delete_output_dir: false
+tokenizer: "meta-llama/Llama-3.1-8B-Instruct"
+count_tokens: true
+tokenize_text: false
+validation_fraction: 0
+num_workers: 5
+num_tasks: 1
+compress_mds: False
+sources:
+  #### Code ####
+  - name: "code_c"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/c"
+    text_key: "content"
+    type: huggingface
+  - name: "code_c++"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/c++"
+    text_key: "content"
+    type: huggingface
+  - name: "code_python"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/python"
+    text_key: "content"
+    type: huggingface
+  - name: "code_typescript"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/typescript"
+    text_key: "content"
+    type: huggingface
+  - name: "code_javascript"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/javascript"
+    text_key: "content"
+    type: huggingface
+  - name: "code_java"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/java"
+    text_key: "content"
+    type: huggingface
+  - name: "code_lua"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/lua"
+    text_key: "content"
+    type: huggingface
+  - name: "code_shell"
+    path: bigcode/the-stack-smol
+    data_dir: "data/shell"
+    text_key: "content"
+    type: huggingface
+  - name: "code_go"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/go"
+    text_key: "content"
+    num_tasks: 1
+    type: huggingface
+  - name: "code_rust"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/rust"
+    text_key: "content"
+    type: huggingface
+  - name: "code_html"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/html"
+    text_key: "content"
+    type: huggingface
+  - name: "code_css"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/css"
+    text_key: "content"
+    type: huggingface
+  - name: "code_sql"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/sql"
+    text_key: "content"
+    type: huggingface
+  - name: "code_php"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/php"
+    text_key: "content"
+    type: huggingface
+  - name: "code_markdown"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/markdown"
+    text_key: "content"
+    type: huggingface
+  - name: "code_dockerfile"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/dockerfile"
+    text_key: "content"
+    type: huggingface
+  - name: "code_tex"
+    num_tasks: 1
+    path: bigcode/the-stack-smol
+    data_dir: "data/tex"
+    text_key: "content"
+    type: huggingface
+  - name: "code_json"
+    num_samples: 10000
+    num_tasks: 1
+    path: "hf://datasets/bigcode/starcoderdata/json"
+    text_key: "content"
+    type: parquet
+  #### Portuguese ####
+  - name: "pt_books"
+    num_samples: -1 #2762
+    path: "hf://datasets/eduagarcia/pd_books_pt/data"
+    type: parquet
+  - name: "pt_papers"
+    num_samples: 30000 #277266
+    num_tasks: 10
+    path: "hf://datasets/eduagarcia/scielo_papers/data"
+    type: parquet
+  - name: "pt_legal"
+    num_samples: 30000 #11946015
+    num_tasks: 10
+    path: "hf://datasets/eduagarcia/LegalPT_dedup/all"
+    type: parquet
+  - name: "pt_news"
+    num_samples: 30000 #11559018
+    text_key: "plain_text"
+    num_tasks: 10
+    format: "{title}\n{text}"
+    path: "hf://datasets/eduagarcia/cc_news_pt_v2/data"
+    type: parquet
+  - name: "pt_web"
+    num_samples: 50000 #189851449
+    num_tasks: 5
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/por_Latn/train"
+    type: parquet
+  - name: "pt_speech_text"
+    num_samples: -1 #3950
+    num_tasks: 1
+    path: "hf://datasets/bigscience-data/roots_pt_ted_talks_iwslt/data"
+    type: parquet
+  - name: "pt_wiki"
+    num_samples: 30000 #373539
+    num_tasks: 3
+    path: "hf://datasets/bigscience-data/roots_pt_wikipedia/data"
+    type: parquet
+  - name: "pt_biomedical"
+    num_samples: 30000
+    num_tasks: 1
+    path: "rntc/pubmed_preprocess"
+    split: pt
+    type: huggingface
+    streaming: true
+  - name: "pt_subtitles-1"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: pt
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "pt_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: pt_BR
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "pt_social-1"
+    num_samples: -1
+    num_tasks: 1
+    path: "carolina-c4ai/corpus-carolina"
+    hf_custom_args:
+      taxonomy: soc
+    split: corpus
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "pt_social-2"
+    num_samples: 500000
+    num_workers: 10
+    num_tasks: 100
+    path: "tallesl/quinquilharia"
+    text_key: "content"
+    shuffle: true
+    streaming: true
+    shuffle_buffer_size: 20000
+    type: huggingface
+  - name: "pt_lyrics"
+    num_samples: 50000
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/pt"
+    type: parquet
+  ### English ###
+  - name: "en_web"
+    num_samples: 30000
+    num_tasks: 10
+    path: "hf://datasets/HuggingFaceFW/fineweb/data"
+    type: parquet
+  - name: "en_social"
+    num_samples: 30000
+    num_tasks: 10
+    path: "hf://datasets/orionweller/reddit_mds_incremental"
+    type: mds
+  - name: "en_books"
+    num_samples: 3000
+    num_tasks: 10
+    path: "hf://datasets/orionweller/books_mds_incremental"
+    type: mds
+  - name: "en_papers-1"
+    num_samples: 15000
+    num_tasks: 10
+    path: "hf://datasets/orionweller/pes2o_mds_incremental"
+    type: mds
+  - name: "en_papers-2"
+    num_samples: 15000
+    num_tasks: 10
+    path: "hf://datasets/orionweller/arxiv_mds_incremental"
+    type: mds
+  - name: "en_news"
+    num_samples: 30000
+    num_tasks: 10
+    path: "hf://datasets/orionweller/cc_news_mds_incremental"
+    type: mds
+  - name: "en_wiki"
+    num_samples: 30000
+    num_tasks: 10
+    path: "hf://datasets/orionweller/wikipedia_mds_incremental"
+    type: mds
+  - name: "en_speech_text"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/bigscience-data/roots_en_ted_talks_iwslt/data"
+    type: parquet
+  - name: "en_biomedical"
+    num_samples: 30000
+    num_tasks: 1
+    path: "rntc/pubmed_preprocess"
+    split: en
+    type: huggingface
+    streaming: true
+  - name: "en_legal"
+    num_samples: 30000
+    num_tasks: 10
+    path: "hf://datasets/joelniklaus/Multi_Legal_Pile@refs/convert/parquet/en_all"
+    type: parquet
+  - name: "en_finance"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/AIR-Bench/qa_finance_en@refs/convert/parquet/AIR-Bench_24.05/corpus_default"
+    type: parquet
+  - name: "en_emoji-1"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "chosen"
+    format: "{prompt}\n{text}"
+    path: "hf://datasets/Orion-zhen/dpo-mathinstuct-emoji@refs/convert/parquet/default"
+    type: parquet
+  - name: "en_emoji-2"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "chosen"
+    format: "{prompt}\n{text}"
+    path: "hf://datasets/Orion-zhen/dpo-codealpaca-emoji@refs/convert/parquet/default"
+    type: parquet
+  - name: "en_emoji-3"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "chosen"
+    format: "{prompt}\n{text}"
+    path: "hf://datasets/Orion-zhen/dpo-physical-reasoning-emoji@refs/convert/parquet/default"
+    type: parquet
+  - name: "en_emoji-4"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/ElKulako/stocktwits-emoji@refs/convert/parquet/default"
+    type: parquet
+  - name: "en_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: en
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "en_poetry"
+    num_samples: -1
+    num_tasks: 1
+    format: "{Title}\n{Author}\n\n{text}"
+    path: "hf://datasets/DanFosing/public-domain-poetry@refs/convert/parquet/default"
+    type: parquet
+  - name: "en_lyrics"
+    num_samples: 50000
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/en"
+    type: parquet
+  # Spanish
+  - name: "es_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/spa_Latn/train"
+    type: parquet
+  - name: "es_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/bigscience-data/roots_es_wikipedia/data"
+    type: parquet
+  - name: "es_speech_text"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/bigscience-data/roots_es_ted_talks_iwslt/data"
+    type: parquet
+  - name: "es_biomedical"
+    num_samples: -1
+    num_tasks: 1
+    path: "rntc/pubmed_preprocess"
+    split: es
+    type: huggingface
+    streaming: true
+  - name: "es_legal"
+    num_samples: 30000
+    num_tasks: 5
+    path: "hf://datasets/joelniklaus/Multi_Legal_Pile@refs/convert/parquet/es_all"
+    type: parquet
+  - name: "es_news"
+    num_samples: 30000
+    num_tasks: 20
+    path: "hf://datasets/LeoCordoba/CC-NEWS-ES@refs/convert/parquet/"
+    type: parquet
+  - name: "es_books"
+    num_samples: 2000 
+    num_tasks: 10
+    path: "hf://datasets/jorgeortizfuentes/spanish_books/data"
+    type: parquet
+  - name: "es_papers-1"
+    num_samples: 15000
+    num_tasks: 2
+    text_key: "abstract_es"
+    format: "{title_es}\n{text}"
+    path: "hf://datasets/eduagarcia/scielo_abstracts/data"
+    type: parquet
+  - name: "es_papers-2"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/almanach/HALvest@refs/convert/parquet/es"
+    type: parquet
+  - name: "es_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: es
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "es_poetry-1"
+    num_samples: -1
+    num_tasks: 1
+    format: "{title}\n{author}\n\n{text}"
+    path: "hf://datasets/jorge-henao/disco_poetry_spanish@refs/convert/parquet/default"
+    type: parquet
+  - name: "es_poetry-2"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "content"
+    format: "{title}\n{author}\n\n{text}"
+    path: "hf://datasets/andreamorgar/spanish_poetry@refs/convert/parquet/default"
+    type: parquet
+  - name: "es_social"
+    num_samples: -1 #972
+    num_tasks: 1
+    text_key: "comments"
+    format: "{title}\n{body}\n\n{text}"
+    path: "hf://datasets/Arconte/Dominican_reddit_raw_corpus@refs/convert/parquet/default"
+    type: parquet
+  - name: "es_lyrics"
+    num_samples: 50000
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/es"
+    type: parquet
+  #French
+  - name: "fr_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/fra_Latn/train"
+    type: parquet
+  - name: "fr_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/bigscience-data/roots_fr_wikipedia/data"
+    type: parquet
+  - name: "fr_speech_text"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/bigscience-data/roots_fr_ted_talks_iwslt/data"
+    type: parquet
+  - name: "fr_biomedical"
+    num_samples: -1
+    num_tasks: 1
+    path: "rntc/pubmed_preprocess"
+    split: fr
+    type: huggingface
+    streaming: true
+  - name: "fr_legal"
+    num_samples: 30000
+    num_tasks: 5
+    path: "hf://datasets/joelniklaus/Multi_Legal_Pile@refs/convert/parquet/fr_all"
+    type: parquet
+  - name: "fr_news-1"
+    num_samples: -1
+    text_key: "plain_text"
+    num_tasks: 1
+    format: "{title}\n{text}"
+    path: "hf://datasets/kamarko/ccnews-french-subset/data"
+    type: parquet
+  - name: "fr_news-2"
+    num_samples: 15000
+    num_tasks: 5
+    path: "hf://datasets/AIR-Bench/qa_news_fr@refs/convert/parquet/AIR-Bench_24.05/corpus_default"
+    type: parquet
+  - name: "fr_papers"
+    num_samples: 5000
+    num_tasks: 3
+    path: "hf://datasets/almanach/HALvest@refs/convert/parquet/fr"
+    type: parquet
+  - name: "fr_finance"
+    num_samples: 50000
+    num_tasks: 1
+    path: "hf://datasets/AIR-Bench/qa_finance_fr@refs/convert/parquet/AIR-Bench_24.05/corpus_default"
+    type: parquet
+  - name: "fr_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: fr
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "fr_poetry"
+    num_samples: -1 # 1821
+    num_tasks: 1
+    format: "{title}\n{poet}\n\n{text}"
+    path: "hf://datasets/manu/french_poetry/data"
+    type: parquet
+  - name: "fr_lyrics"
+    num_samples: 50000
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/fr"
+    type: parquet
+  # Chinese
+  - name: "zh_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/cmn_Hani/train"
+    type: parquet
+  - name: "zh_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/bigscience-data/roots_zh-cn_wikipedia/data"
+    type: parquet
+  - name: "zh_speech_text"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/bigscience-data/roots_zh_ted_talks_iwslt/data"
+    type: parquet
+  - name: "zh_biomedical-1"
+    num_samples: -1
+    num_tasks: 1
+    path: "rntc/pubmed_preprocess"
+    split: zh
+    type: huggingface
+    streaming: true
+  - name: "zh_biomedical-2"
+    num_samples: 30000
+    num_tasks: 1
+    #path: "hf://datasets/DavidLanz/medical_pretrain@refs/convert/parquet/default" # deleted from hf
+    path: "hf://datasets/eduagarcia/DavidLanz_medical_pretrain_sample/data" # deleted from hf
+    type: parquet
+  - name: "zh_news-1"
+    num_samples: 15000
+    num_tasks: 5
+    format: "{title}\n{text}"
+    path: "hf://datasets/liswei/news-collection-zhtw/data"
+    type: parquet
+  - name: "zh_news-2"
+    num_samples: 15000
+    num_tasks: 5
+    path: "hf://datasets/AIR-Bench/qa_news_zh@refs/convert/parquet/AIR-Bench_24.05/corpus_default"
+    type: parquet
+  # - name: "zh_books"
+  #   num_tasks: 1
+  #   num_samples: 3000
+  #   streaming: true
+  #   path: liwu/MNBVC
+  #   hf_name: "book"
+  #   type: huggingface
+  # - name: "zh_legal"
+  #   num_tasks: 1
+  #   num_samples: 30000
+  #   streaming: true
+  #   path: liwu/MNBVC
+  #   hf_name: "law_judgement"
+  #   type: huggingface
+  # - name: "zh_blog"
+  #   num_tasks: 1
+  #   num_samples: 30000
+  #   streaming: true
+  #   path: liwu/MNBVC
+  #   hf_name: "blog"
+  #   type: huggingface
+  - name: "zh_legal"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "content"
+    path: "hf://datasets/TigerResearch/tigerbot-law-plugin@refs/convert/parquet/"
+    type: parquet
+  # - name: "zh_books"
+  #   num_samples: -1 #466
+  #   num_tasks: 1
+  #   text_key: "chapter"
+  #   path: "hf://datasets/yuyijiong/Book_Summary_Chinese@refs/convert/parquet/"
+  #   type: parquet
+  - name: "zh_finance"
+    num_samples: 30000
+    num_tasks: 5
+    path: "hf://datasets/Duxiaoman-DI/FinCorpus@refs/convert/parquet/"
+    type: parquet
+  - name: "zh_poetry"
+    num_samples: -1
+    num_tasks: 1
+    format: "{title}\n{author}\n\n{text}"
+    path: "hf://datasets/erhwenkuo/poetry-chinese-zhtw@refs/convert/parquet/"
+    type: parquet
+  - name: "zh_lyrics-1"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/dirtycomputer/chinese_lyrics@refs/convert/parquet/default"
+    type: parquet
+  - name: "zh_lyrics-2"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/zh"
+    type: parquet
+  - name: "zh_emoji-1"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "chosen"
+    format: "{prompt}\n{text}"
+    path: "hf://datasets/Orion-zhen/dpo-emoji-zh@refs/convert/parquet/default"
+    type: parquet
+  - name: "zh_emoji-2"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "chosen"
+    format: "{prompt}\n{text}"
+    path: "hf://datasets/Orion-zhen/dpo-ruozhiba-emoji@refs/convert/parquet/default"
+    type: parquet
+  - name: "zh_emoji-3"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "answer_zh"
+    format: "{question}\n{text}"
+    path: "shareAI/DPO-zh-en-emoji"
+    type: huggingface
+    data_files: "[0,1,2]*.jsonl"
+  - name: "zh_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: zh_CN
+    type: huggingface
+    streaming: true
+    shuffle: False
+  #Japanese
+  - name: "ja_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/jpn_Jpan/train"
+    type: parquet
+  - name: "ja_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/wikimedia/wikipedia/20231101.ja"
+    type: parquet
+  - name: "ja_social"
+    num_samples: -1
+    num_tasks: 1
+    #path: "p1atdev/open2ch"
+    path: "hf://datasets/eduagarcia/open2ch_balanced"
+    type: parquet
+  - name: "ja_news"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/kajuma/CC-news-2024-July-October-cleaned/data"
+    type: parquet
+  - name: "ja_books"
+    num_samples: 5000
+    num_tasks: 2
+    path: "hf://datasets/globis-university/aozorabunko-clean@refs/convert/parquet/default"
+    type: parquet
+  - name: "ja_legal"
+    num_samples: 50000
+    num_tasks: 30
+    path: "hf://datasets/geniacllm/hanrei"
+    type: parquet
+  - name: "ja_papers"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/kunishou/J-ResearchCorpus@refs/convert/parquet/"
+    type: parquet
+  - name: "ja_poetry"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "haiku"
+    path: "hf://datasets/p1atdev/modern_haiku@refs/convert/parquet/all/train"
+    type: parquet
+  - name: "ja_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: ja
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "ja_lyrics"
+    num_samples: 50000
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/ja"
+    type: parquet
+  # German
+  # this is helpful: https://github.com/AIR-Bench/AIR-Bench/blob/main/docs/available_tasks.md#air-bench_2405
+  - name: "de_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/deu_Latn/train"
+    type: parquet
+  - name: "de_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/wikimedia/wikipedia/20231101.de"
+    type: parquet
+  - name: "de_biomedical"
+    num_samples: 30000
+    num_tasks: 1
+    path: "rntc/pubmed_preprocess"
+    split: de
+    type: huggingface
+    streaming: true
+  - name: "de_legal"
+    num_samples: 30000
+    num_tasks: 5
+    path: "hf://datasets/joelniklaus/Multi_Legal_Pile@refs/convert/parquet/de_all"
+    type: parquet
+  - name: "de_papers"
+    num_samples: -1 #652
+    num_tasks: 1
+    path: "hf://datasets/almanach/HALvest@refs/convert/parquet/de"
+    type: parquet
+  - name: "de_news"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/AIR-Bench/qa_news_de@refs/convert/parquet/AIR-Bench_24.05/corpus_default"
+    type: parquet
+  - name: "de_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: de
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "de_lyrics"
+    num_samples: 50000
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/de"
+    type: parquet
+  # Russian
+  - name: "ru_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/rus_Cyrl/train"
+    type: parquet
+  - name: "ru_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/wikimedia/wikipedia/20231101.ru"
+    type: parquet
+  - name: "ru_biomedical-1"
+    num_samples: -1 #1670
+    num_tasks: 1
+    path: "rntc/pubmed_preprocess"
+    split: ru
+    type: huggingface
+    streaming: true
+  - name: "ru_biomedical-2"
+    num_samples: 30000 #245
+    num_tasks: 1
+    text_key: "ans"
+    format: "{desc}\n{text}"
+    path: "hf://datasets/blinoff/medical_qa_ru_data@refs/convert/parquet/"
+    type: parquet
+  - name: "ru_papers-1"
+    num_samples: -1 #245
+    num_tasks: 1
+    path: "hf://datasets/almanach/HALvest@refs/convert/parquet/ru"
+    type: parquet
+  - name: "ru_papers-2"
+    num_samples: 30000
+    num_tasks: 1
+    text_key: "abstract"
+    format: "{title}\n{text}"
+    path: "hf://datasets/mlsa-iai-msu-lab/ru_sci_bench@refs/convert/parquet/default/ru"
+    type: parquet
+  - name: "ru_news-1"
+    num_samples: 15000
+    num_tasks: 5
+    path: "hf://datasets/AIR-Bench/qa_news_ru@refs/convert/parquet/AIR-Bench_24.05/corpus_default"
+    type: parquet
+  - name: "ru_news-2"
+    num_samples: 15000
+    num_tasks: 5
+    path: "hf://datasets/IlyaGusev/ru_news@refs/convert/parquet/"
+    type: parquet
+  - name: "ru_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: ru
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "ru_poetry-1"
+    num_samples: -1 #7755
+    num_tasks: 1
+    format: "{author}\n\n{text}"
+    path: "hf://datasets/AnyaSchen/russian_poetry_with_keywords@refs/convert/parquet/"
+    type: parquet
+  - name: "ru_poetry-2"
+    num_samples: -1 #10000
+    num_tasks: 1
+    format: "{title}\n{author}\n\n{text}"
+    path: "hf://datasets/0x7o/poemma-10k@refs/convert/parquet/"
+    type: parquet
+  - name: "ru_lyrics"
+    num_samples: 30000
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/sevenreasons/genius-lyrics-russian@refs/convert/parquet/default"
+    type: parquet
+  # Arabic
+  - name: "ar_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/arb_Arab/train"
+    type: parquet
+  - name: "ar_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/bigscience-data/roots_ar_wikipedia/data"
+    type: parquet
+  - name: "ar_speech_text"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/bigscience-data/roots_ar_ted_talks_iwslt/data"
+    type: parquet
+  - name: "ar_books"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "ar"
+    path: "hf://datasets/ImruQays/Rasaif-Classical-Arabic-English-Parallel-texts@refs/convert/parquet/"
+    type: parquet
+  - name: "ar_finance"
+    num_samples: -1 #7560
+    num_tasks: 1
+    text_key: "source"
+    path: "hf://datasets/asas-ai/financial_news@refs/convert/parquet/"
+    type: parquet
+  - name: "ar_biomedical"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/premio-ai/TheArabicPile_Medical/dedup"
+    type: parquet
+  - name: "ar_lyrics"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/premio-ai/TheArabicPile_Lyrics/dedup"
+    type: parquet
+  - name: "ar_poetry"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/premio-ai/TheArabicPile_Poetry/dedup"
+    type: parquet
+  - name: "ar_news"
+    num_samples: 15000
+    num_tasks: 5
+    path: "hf://datasets/AIR-Bench/qa_news_ar@refs/convert/parquet/AIR-Bench_24.05/corpus_default"
+    type: parquet
+  - name: "ar_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: ar
+    type: huggingface
+    streaming: true
+    shuffle: False
+  # Italian
+  - name: "it_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/ita_Latn/train"
+    type: parquet
+  - name: "it_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/wikimedia/wikipedia/20231101.it"
+    type: parquet
+  - name: "it_biomedical-1"
+    num_samples: -1 #125
+    num_tasks: 1
+    path: "rntc/pubmed_preprocess"
+    split: it
+    type: huggingface
+    streaming: true
+  - name: "it_biomedical-2"
+    num_samples: 50000
+    num_tasks: 3
+    path: "hf://datasets/HiTZ/Multilingual-Medical-Corpus@refs/convert/parquet/default/it"
+    type: parquet
+  - name: "it_legal"
+    num_samples: 30000
+    num_tasks: 5
+    path: "hf://datasets/joelniklaus/Multi_Legal_Pile@refs/convert/parquet/it_all"
+    type: parquet
+  - name: "it_papers"
+    num_samples: -1 #1170
+    num_tasks: 1
+    path: "hf://datasets/almanach/HALvest@refs/convert/parquet/it"
+    type: parquet
+  - name: "it_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: it
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "it_lyrics"
+    num_samples: 50000
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/it"
+    type: parquet
+  # Polish
+  - name: "pl_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/pol_Latn/train"
+    type: parquet
+  - name: "pl_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/wikimedia/wikipedia/20231101.pl"
+    type: parquet
+  # - name: "pl_biomedical"
+  #   num_samples: -1 #877
+  #   num_tasks: 1
+  #   path: "rntc/pubmed_preprocess"
+  #   split: pl
+  #   type: huggingface
+  #   streaming: true
+  - name: "pl_legal"
+    num_samples: 30000
+    num_tasks: 5
+    path: "hf://datasets/joelniklaus/Multi_Legal_Pile@refs/convert/parquet/pl_all"
+    type: parquet
+  - name: "pl_news-1"
+    num_samples: 15000
+    num_tasks: 2
+    text_key: "content"
+    format: "{title}\n{headline}\n{text}"
+    path: "hf://datasets/WiktorS/polish-news@refs/convert/parquet/"
+    type: parquet
+  - name: "pl_news-2"
+    num_samples: 15000
+    num_tasks: 1
+    text_key: "content"
+    format: "{title}\n{subtitle}\n{lead}\n{text}"
+    path: "hf://datasets/winterkitsune/elka-pl-news@refs/convert/parquet/"
+    type: parquet
+  - name: "pl_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: pl
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "pl_lyrics"
+    num_samples: 50000
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/pl"
+    type: parquet
+  # Korean
+  - name: "ko_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/kor_Hang/train"
+    type: parquet
+  - name: "ko_wiki"
+    num_samples: 30000
+    num_tasks: 3
+    path: "hf://datasets/wikimedia/wikipedia/20231101.ko"
+    type: parquet
+  - name: "ko_news-1"
+    num_samples: 15000
+    num_tasks: 5
+    path: "hf://datasets/AIR-Bench/qa_news_ko@refs/convert/parquet/AIR-Bench_24.05/corpus_default"
+    type: parquet
+  - name: "ko_news-2"
+    num_samples: 15000
+    num_tasks: 1
+    text_key: "document"
+    format: "{title}\n{text}"
+    path: "hf://datasets/daekeun-ml/naver-news-summarization-ko@refs/convert/parquet/default/train"
+    type: parquet
+  - name: "ko_finance"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "output"
+    format: "{instruction}\n{text}"
+    path: "hf://datasets/BCCard/BCCard-Finance-Kor-QnA@refs/convert/parquet/"
+    type: parquet
+  - name: "ko_legal-1"
+    num_samples: 15000
+    num_tasks: 2
+    text_key: "전문"
+    path: "hf://datasets/joonhok-exo-ai/korean_law_open_data_precedents@refs/convert/parquet/"
+    type: parquet
+  - name: "ko_legal-2"
+    num_samples: 15000
+    num_tasks: 1
+    text_key: "answer"
+    format: "{title}\n{question}\n{text}"
+    path: "hf://datasets/jihye-moon/klac_legal_aid_counseling@refs/convert/parquet/"
+    type: parquet
+  - name: "ko_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: ko
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "ko_social-1"
+    num_samples: -1 #10000
+    num_tasks: 1
+    text_key: "selftext"
+    format: "{title}\n{text}"
+    path: "hf://datasets/werty1248/Korea-Related-Reddit-posts/data"
+    type: parquet
+  - name: "ko_social-2"
+    num_samples: -1 #10000
+    num_tasks: 1
+    text_key: "body"
+    path: "hf://datasets/werty1248/Korea-Related-Reddit-comments/data"
+    type: parquet
+  - name: "ko_lyrics"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/ko"
+    type: parquet
+  # Vietinamese
+  - name: "vi_web"
+    num_samples: 30000
+    num_tasks: 6
+    path: "hf://datasets/HuggingFaceFW/fineweb-2/data/vie_Latn/train"
+    type: parquet
+  - name: "vi_wiki"
+    num_samples: 30000
+    num_tasks: 4
+    path: "hf://datasets/wikimedia/wikipedia/20231101.vi"
+    type: parquet
+  - name: "vi_subtitles"
+    num_samples: 500000
+    num_tasks: 1
+    path: "badranx/opus_raw"
+    hf_custom_args:
+      corpus: OpenSubtitles v2024
+      lang: pl
+    type: huggingface
+    streaming: true
+    shuffle: False
+  - name: "vi_news"
+    num_samples: 50000
+    num_tasks: 6
+    path: "hf://datasets/bigscience-data/roots_vi_binhvq_news_corpus@refs/convert/parquet/"
+    type: parquet
+  - name: "vi_poetry"
+    num_samples: -1
+    num_tasks: 1
+    path: "hf://datasets/bigscience-data/roots_vi_vietnamese_poetry@refs/convert/parquet/"
+    type: parquet
+  - name: "vi_lyrics"
+    num_samples: -1
+    num_tasks: 1
+    text_key: "lyrics"
+    path: "hf://datasets/eduagarcia/genius_multilingual/vi"
+    type: parquet
+  - name: "vi_speech_text"
+    num_samples: -1 #1566
+    num_tasks: 1
+    path: "hf://datasets/bigscience-data/roots_vi_ted_talks_iwslt/data"
+    type: parquet
+  - name: "vi_biomedical"
+    num_samples: 50000
+    num_tasks: 1
+    text_key: "vi"
+    path: "VietAI/vi_pubmed"
+    split: pubmed22
+    type: huggingface
+    streaming: true

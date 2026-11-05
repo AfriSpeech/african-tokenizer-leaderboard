@@ -1,0 +1,1607 @@
+ar:
+  name: ar
+  pretty_name: Arabic
+  n_docs: 12410
+  word_count: 2005226
+  char_count: 9909750
+  byte_count: 17685166
+  domains:
+  - filepath: ar/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 3082
+    word_count: 200027
+    char_count: 1023337
+    byte_count: 1814450
+    hf_datasets:
+    - premio-ai/TheArabicPile_Medical
+  - filepath: ar/books.jsonl.gz
+    name: books
+    pretty_name: Books
+    n_docs: 1611
+    word_count: 200017
+    char_count: 1021207
+    byte_count: 1854363
+    hf_datasets:
+    - ImruQays/Rasaif-Classical-Arabic-English-Parallel-texts
+  - filepath: ar/finance.jsonl.gz
+    name: finance
+    pretty_name: Finance
+    n_docs: 2475
+    word_count: 200115
+    char_count: 1046315
+    byte_count: 1874459
+    hf_datasets:
+    - asas-ai/financial_news
+  - filepath: ar/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 1274
+    word_count: 200146
+    char_count: 962035
+    byte_count: 1709098
+    hf_datasets:
+    - premio-ai/TheArabicPile_Lyrics
+  - filepath: ar/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 665
+    word_count: 200248
+    char_count: 1061200
+    byte_count: 1919275
+    hf_datasets:
+    - AIR-Bench/qa_news_ar
+  - filepath: ar/poetry.jsonl.gz
+    name: poetry
+    pretty_name: Poetry
+    n_docs: 588
+    word_count: 200192
+    char_count: 790109
+    byte_count: 1376727
+    hf_datasets:
+    - premio-ai/TheArabicPile_Poetry
+  - filepath: ar/speech_text.jsonl.gz
+    name: speech_text
+    pretty_name: Live Speech
+    n_docs: 101
+    word_count: 202309
+    char_count: 974044
+    byte_count: 1748711
+    hf_datasets:
+    - bigscience-data/roots_ar_ted_talks_iwslt
+  - filepath: ar/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1997
+    word_count: 200004
+    char_count: 925830
+    byte_count: 1623099
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: ar/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 375
+    word_count: 200938
+    char_count: 1051099
+    byte_count: 1888489
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: ar/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 242
+    word_count: 201230
+    char_count: 1054574
+    byte_count: 1876495
+    hf_datasets:
+    - bigscience-data/roots_ar_wikipedia
+  parities:
+  - filepath: ar/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 43760
+    char_count: 226881
+    byte_count: 411839
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+code:
+  name: code
+  pretty_name: Programming Languages
+  n_docs: 4260
+  word_count: 3645230
+  char_count: 17454895
+  byte_count: 17621590
+  domains:
+  - filepath: code/c++.jsonl.gz
+    name: c++
+    pretty_name: C++
+    n_docs: 127
+    word_count: 203520
+    char_count: 975832
+    byte_count: 976109
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/c.jsonl.gz
+    name: c
+    pretty_name: C
+    n_docs: 161
+    word_count: 201900
+    char_count: 916433
+    byte_count: 920869
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/css.jsonl.gz
+    name: css
+    pretty_name: CSS
+    n_docs: 112
+    word_count: 202856
+    char_count: 830479
+    byte_count: 830831
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/dockerfile.jsonl.gz
+    name: dockerfile
+    pretty_name: Dockerfile
+    n_docs: 573
+    word_count: 200130
+    char_count: 1222594
+    byte_count: 1223939
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/go.jsonl.gz
+    name: go
+    pretty_name: Go
+    n_docs: 143
+    word_count: 200516
+    char_count: 896026
+    byte_count: 897182
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/html.jsonl.gz
+    name: html
+    pretty_name: HTML
+    n_docs: 75
+    word_count: 200669
+    char_count: 752614
+    byte_count: 769017
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/java.jsonl.gz
+    name: java
+    pretty_name: Java
+    n_docs: 240
+    word_count: 202303
+    char_count: 1187285
+    byte_count: 1190575
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/javascript.jsonl.gz
+    name: javascript
+    pretty_name: JavaScript
+    n_docs: 171
+    word_count: 201394
+    char_count: 795604
+    byte_count: 800408
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/json.jsonl.gz
+    name: json
+    pretty_name: JSON
+    n_docs: 792
+    word_count: 200027
+    char_count: 917462
+    byte_count: 935596
+    hf_datasets:
+    - bigcode/starcoderdata
+  - filepath: code/lua.jsonl.gz
+    name: lua
+    pretty_name: Lua
+    n_docs: 154
+    word_count: 216383
+    char_count: 842377
+    byte_count: 845289
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/markdown.jsonl.gz
+    name: markdown
+    pretty_name: Markdown
+    n_docs: 229
+    word_count: 203378
+    char_count: 1088251
+    byte_count: 1127597
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/php.jsonl.gz
+    name: php
+    pretty_name: PHP
+    n_docs: 371
+    word_count: 200844
+    char_count: 1508130
+    byte_count: 1516129
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/python.jsonl.gz
+    name: python
+    pretty_name: Python
+    n_docs: 192
+    word_count: 201133
+    char_count: 992688
+    byte_count: 997203
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/rust.jsonl.gz
+    name: rust
+    pretty_name: Rust
+    n_docs: 139
+    word_count: 201735
+    char_count: 932866
+    byte_count: 935656
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/shell.jsonl.gz
+    name: shell
+    pretty_name: Shell
+    n_docs: 330
+    word_count: 203671
+    char_count: 971426
+    byte_count: 972326
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/sql.jsonl.gz
+    name: sql
+    pretty_name: SQL
+    n_docs: 115
+    word_count: 201173
+    char_count: 866258
+    byte_count: 872540
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/tex.jsonl.gz
+    name: tex
+    pretty_name: TeX
+    n_docs: 142
+    word_count: 200757
+    char_count: 896920
+    byte_count: 933443
+    hf_datasets:
+    - bigcode/the-stack-smol
+  - filepath: code/typescript.jsonl.gz
+    name: typescript
+    pretty_name: TypeScript
+    n_docs: 194
+    word_count: 202841
+    char_count: 861650
+    byte_count: 876881
+    hf_datasets:
+    - bigcode/the-stack-smol
+  parities: null
+de:
+  name: de
+  pretty_name: German
+  n_docs: 5119
+  word_count: 1841622
+  char_count: 11016640
+  byte_count: 11207161
+  domains:
+  - filepath: de/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 1294
+    word_count: 200071
+    char_count: 1354706
+    byte_count: 1379390
+    hf_datasets:
+    - rntc/pubmed_preprocess
+  - filepath: de/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 87
+    word_count: 200504
+    char_count: 1290917
+    byte_count: 1322786
+    hf_datasets:
+    - joelniklaus/Multi_Legal_Pile
+  - filepath: de/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 504
+    word_count: 200147
+    char_count: 1023479
+    byte_count: 1038534
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: de/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 489
+    word_count: 200626
+    char_count: 1223587
+    byte_count: 1245211
+    hf_datasets:
+    - AIR-Bench/qa_news_de
+  - filepath: de/papers.jsonl.gz
+    name: papers
+    pretty_name: Scientific Papers
+    n_docs: 28
+    word_count: 434248
+    char_count: 2645146
+    byte_count: 2689024
+    hf_datasets:
+    - almanach/HALvest
+  - filepath: de/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1917
+    word_count: 200001
+    char_count: 949389
+    byte_count: 960233
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: de/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 419
+    word_count: 203398
+    char_count: 1254867
+    byte_count: 1274669
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: de/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 381
+    word_count: 202627
+    char_count: 1274549
+    byte_count: 1297314
+    hf_datasets:
+    - wikimedia/wikipedia
+  parities:
+  - filepath: de/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 49054
+    char_count: 300367
+    byte_count: 305294
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+en:
+  name: en
+  pretty_name: English
+  n_docs: 8513
+  word_count: 2812929
+  char_count: 14087244
+  byte_count: 14177905
+  domains:
+  - filepath: en/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 1236
+    word_count: 200012
+    char_count: 1118927
+    byte_count: 1124314
+    hf_datasets:
+    - rntc/pubmed_preprocess
+  - filepath: en/books.jsonl.gz
+    name: books
+    pretty_name: Books
+    n_docs: 51
+    word_count: 200182
+    char_count: 985428
+    byte_count: 988365
+    hf_datasets:
+    - orionweller/books_mds_incremental
+  - filepath: en/emoji.jsonl.gz
+    name: emoji
+    pretty_name: Emoji Heavy
+    n_docs: 1388
+    word_count: 201090
+    char_count: 891817
+    byte_count: 933164
+    hf_datasets:
+    - Orion-zhen/dpo-mathinstuct-emoji
+    - Orion-zhen/dpo-codealpaca-emoji
+    - Orion-zhen/dpo-physical-reasoning-emoji
+    - ElKulako/stocktwits-emoji
+  - filepath: en/finance.jsonl.gz
+    name: finance
+    pretty_name: Finance
+    n_docs: 864
+    word_count: 200014
+    char_count: 1157173
+    byte_count: 1157389
+    hf_datasets:
+    - AIR-Bench/qa_finance_en
+  - filepath: en/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 116
+    word_count: 201182
+    char_count: 1242150
+    byte_count: 1251721
+    hf_datasets:
+    - joelniklaus/Multi_Legal_Pile
+  - filepath: en/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 511
+    word_count: 200703
+    char_count: 853969
+    byte_count: 859854
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: en/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 327
+    word_count: 200319
+    char_count: 1031254
+    byte_count: 1042095
+    hf_datasets:
+    - orionweller/cc_news_mds_incremental
+  - filepath: en/papers.jsonl.gz
+    name: papers
+    pretty_name: Scientific Papers
+    n_docs: 54
+    word_count: 204811
+    char_count: 1020471
+    byte_count: 1021465
+    hf_datasets:
+    - orionweller/pes2o_mds_incremental
+    - orionweller/arxiv_mds_incremental
+  - filepath: en/poetry.jsonl.gz
+    name: poetry
+    pretty_name: Poetry
+    n_docs: 379
+    word_count: 200100
+    char_count: 909211
+    byte_count: 909495
+    hf_datasets:
+    - DanFosing/public-domain-poetry
+  - filepath: en/social.jsonl.gz
+    name: social
+    pretty_name: Social Networks
+    n_docs: 966
+    word_count: 200058
+    char_count: 954182
+    byte_count: 957326
+    hf_datasets:
+    - orionweller/reddit_mds_incremental
+  - filepath: en/speech_text.jsonl.gz
+    name: speech_text
+    pretty_name: Live Speech
+    n_docs: 76
+    word_count: 202127
+    char_count: 943686
+    byte_count: 944292
+    hf_datasets:
+    - bigscience-data/roots_en_ted_talks_iwslt
+  - filepath: en/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1990
+    word_count: 200005
+    char_count: 885497
+    byte_count: 887456
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: en/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 322
+    word_count: 200317
+    char_count: 1032138
+    byte_count: 1037424
+    hf_datasets:
+    - HuggingFaceFW/fineweb
+  - filepath: en/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 233
+    word_count: 202009
+    char_count: 1061341
+    byte_count: 1063545
+    hf_datasets:
+    - orionweller/wikipedia_mds_incremental
+  parities: null
+es:
+  name: es
+  pretty_name: Spanish
+  n_docs: 7739
+  word_count: 2408966
+  char_count: 12786745
+  byte_count: 13063395
+  domains:
+  - filepath: es/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 1672
+    word_count: 200015
+    char_count: 1119714
+    byte_count: 1141978
+    hf_datasets:
+    - rntc/pubmed_preprocess
+  - filepath: es/books.jsonl.gz
+    name: books
+    pretty_name: Books
+    n_docs: 52
+    word_count: 202364
+    char_count: 1052274
+    byte_count: 1084255
+    hf_datasets:
+    - jorgeortizfuentes/spanish_books
+  - filepath: es/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 104
+    word_count: 202425
+    char_count: 1251500
+    byte_count: 1281762
+    hf_datasets:
+    - joelniklaus/Multi_Legal_Pile
+  - filepath: es/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 863
+    word_count: 200157
+    char_count: 968044
+    byte_count: 983661
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: es/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 480
+    word_count: 200043
+    char_count: 1064595
+    byte_count: 1089454
+    hf_datasets:
+    - LeoCordoba/CC-NEWS-ES
+  - filepath: es/papers.jsonl.gz
+    name: papers
+    pretty_name: Scientific Papers
+    n_docs: 517
+    word_count: 201529
+    char_count: 1155857
+    byte_count: 1179403
+    hf_datasets:
+    - eduagarcia/scielo_abstracts
+    - almanach/HALvest
+  - filepath: es/poetry.jsonl.gz
+    name: poetry
+    pretty_name: Poetry
+    n_docs: 1340
+    word_count: 200059
+    char_count: 991264
+    byte_count: 1010689
+    hf_datasets:
+    - jorge-henao/disco_poetry_spanish
+    - andreamorgar/spanish_poetry
+  - filepath: es/social.jsonl.gz
+    name: social
+    pretty_name: Social Networks
+    n_docs: 231
+    word_count: 201017
+    char_count: 1051760
+    byte_count: 1067220
+    hf_datasets:
+    - Arconte/Dominican_reddit_raw_corpus
+  - filepath: es/speech_text.jsonl.gz
+    name: speech_text
+    pretty_name: Live Speech
+    n_docs: 98
+    word_count: 200807
+    char_count: 1020325
+    byte_count: 1040639
+    hf_datasets:
+    - bigscience-data/roots_es_ted_talks_iwslt
+  - filepath: es/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1849
+    word_count: 200000
+    char_count: 953137
+    byte_count: 980001
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: es/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 284
+    word_count: 200508
+    char_count: 1073583
+    byte_count: 1094445
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: es/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 249
+    word_count: 200042
+    char_count: 1084692
+    byte_count: 1109888
+    hf_datasets:
+    - bigscience-data/roots_es_wikipedia
+  parities:
+  - filepath: es/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 57126
+    char_count: 306170
+    byte_count: 311963
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+fr:
+  name: fr
+  pretty_name: French
+  n_docs: 6812
+  word_count: 2206430
+  char_count: 11477784
+  byte_count: 11867606
+  domains:
+  - filepath: fr/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 925
+    word_count: 200329
+    char_count: 1129533
+    byte_count: 1175713
+    hf_datasets:
+    - rntc/pubmed_preprocess
+  - filepath: fr/finance.jsonl.gz
+    name: finance
+    pretty_name: Finance
+    n_docs: 1328
+    word_count: 200015
+    char_count: 1084360
+    byte_count: 1136212
+    hf_datasets:
+    - AIR-Bench/qa_finance_fr
+  - filepath: fr/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 84
+    word_count: 202492
+    char_count: 1064627
+    byte_count: 1102437
+    hf_datasets:
+    - joelniklaus/Multi_Legal_Pile
+  - filepath: fr/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 478
+    word_count: 200672
+    char_count: 987624
+    byte_count: 1011721
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: fr/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 640
+    word_count: 200372
+    char_count: 1051965
+    byte_count: 1094657
+    hf_datasets:
+    - kamarko/ccnews-french-subset
+    - AIR-Bench/qa_news_fr
+  - filepath: fr/papers.jsonl.gz
+    name: papers
+    pretty_name: Scientific Papers
+    n_docs: 60
+    word_count: 201051
+    char_count: 1088125
+    byte_count: 1120117
+    hf_datasets:
+    - almanach/HALvest
+  - filepath: fr/poetry.jsonl.gz
+    name: poetry
+    pretty_name: Poetry
+    n_docs: 614
+    word_count: 200314
+    char_count: 979142
+    byte_count: 1002688
+    hf_datasets:
+    - manu/french_poetry
+  - filepath: fr/speech_text.jsonl.gz
+    name: speech_text
+    pretty_name: Live Speech
+    n_docs: 82
+    word_count: 200050
+    char_count: 1018705
+    byte_count: 1046267
+    hf_datasets:
+    - bigscience-data/roots_fr_ted_talks_iwslt
+  - filepath: fr/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1956
+    word_count: 200004
+    char_count: 935334
+    byte_count: 954914
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: fr/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 337
+    word_count: 201115
+    char_count: 1050181
+    byte_count: 1090761
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: fr/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 308
+    word_count: 200016
+    char_count: 1088188
+    byte_count: 1132119
+    hf_datasets:
+    - bigscience-data/roots_fr_wikipedia
+  parities:
+  - filepath: fr/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 56532
+    char_count: 306427
+    byte_count: 318500
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+it:
+  name: it
+  pretty_name: Italian
+  n_docs: 6976
+  word_count: 1408363
+  char_count: 7706475
+  byte_count: 7792425
+  domains:
+  - filepath: it/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 3734
+    word_count: 200036
+    char_count: 1180417
+    byte_count: 1192908
+    hf_datasets:
+    - rntc/pubmed_preprocess
+    - HiTZ/Multilingual-Medical-Corpus
+  - filepath: it/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 99
+    word_count: 203218
+    char_count: 1160913
+    byte_count: 1181269
+    hf_datasets:
+    - joelniklaus/Multi_Legal_Pile
+  - filepath: it/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 568
+    word_count: 200238
+    char_count: 984459
+    byte_count: 994673
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: it/papers.jsonl.gz
+    name: papers
+    pretty_name: Scientific Papers
+    n_docs: 14
+    word_count: 203927
+    char_count: 1149902
+    byte_count: 1162286
+    hf_datasets:
+    - almanach/HALvest
+  - filepath: it/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1940
+    word_count: 200003
+    char_count: 957696
+    byte_count: 965998
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: it/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 261
+    word_count: 200834
+    char_count: 1129560
+    byte_count: 1143012
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: it/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 360
+    word_count: 200107
+    char_count: 1143528
+    byte_count: 1152279
+    hf_datasets:
+    - wikimedia/wikipedia
+  parities:
+  - filepath: it/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 53198
+    char_count: 303228
+    byte_count: 305447
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+ja:
+  name: ja
+  pretty_name: Japanese
+  n_docs: 11039
+  word_count: 2008396
+  char_count: 3801952
+  byte_count: 9717840
+  domains:
+  - filepath: ja/books.jsonl.gz
+    name: books
+    pretty_name: Books
+    n_docs: 49
+    word_count: 201287
+    char_count: 308688
+    byte_count: 915830
+    hf_datasets:
+    - globis-university/aozorabunko-clean
+  - filepath: ja/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 2254
+    word_count: 200005
+    char_count: 306649
+    byte_count: 883541
+    hf_datasets:
+    - geniacllm/hanrei
+  - filepath: ja/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 540
+    word_count: 200011
+    char_count: 458324
+    byte_count: 1025193
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: ja/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 56
+    word_count: 201865
+    char_count: 386085
+    byte_count: 974904
+    hf_datasets:
+    - kajuma/CC-news-2024-July-October-cleaned
+  - filepath: ja/papers.jsonl.gz
+    name: papers
+    pretty_name: Scientific Papers
+    n_docs: 44
+    word_count: 204839
+    char_count: 473457
+    byte_count: 924882
+    hf_datasets:
+    - kunishou/J-ResearchCorpus
+  - filepath: ja/poetry.jsonl.gz
+    name: poetry
+    pretty_name: Poetry
+    n_docs: 1989
+    word_count: 200003
+    char_count: 362090
+    byte_count: 998301
+    hf_datasets:
+    - p1atdev/modern_haiku
+  - filepath: ja/social.jsonl.gz
+    name: social
+    pretty_name: Social Networks
+    n_docs: 3756
+    word_count: 200061
+    char_count: 365738
+    byte_count: 1014746
+    hf_datasets:
+    - p1atdev/open2ch
+  - filepath: ja/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1909
+    word_count: 200001
+    char_count: 395043
+    byte_count: 1011307
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: ja/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 226
+    word_count: 200253
+    char_count: 361319
+    byte_count: 986384
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: ja/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 216
+    word_count: 200071
+    char_count: 384559
+    byte_count: 982752
+    hf_datasets:
+    - wikimedia/wikipedia
+  parities:
+  - filepath: ja/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 67134
+    char_count: 111601
+    byte_count: 327157
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+ko:
+  name: ko
+  pretty_name: Korean
+  n_docs: 9498
+  word_count: 1602826
+  char_count: 6060455
+  byte_count: 12532955
+  domains:
+  - filepath: ko/finance.jsonl.gz
+    name: finance
+    pretty_name: Finance
+    n_docs: 3398
+    word_count: 200212
+    char_count: 724189
+    byte_count: 1717270
+    hf_datasets:
+    - BCCard/BCCard-Finance-Kor-QnA
+  - filepath: ko/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 462
+    word_count: 200164
+    char_count: 753777
+    byte_count: 1811234
+    hf_datasets:
+    - joonhok-exo-ai/korean_law_open_data_precedents
+    - jihye-moon/klac_legal_aid_counseling
+  - filepath: ko/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 604
+    word_count: 200096
+    char_count: 706833
+    byte_count: 1271845
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: ko/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 585
+    word_count: 200356
+    char_count: 750639
+    byte_count: 1771515
+    hf_datasets:
+    - AIR-Bench/qa_news_ko
+    - daekeun-ml/naver-news-summarization-ko
+  - filepath: ko/social.jsonl.gz
+    name: social
+    pretty_name: Social Networks
+    n_docs: 1858
+    word_count: 201488
+    char_count: 932044
+    byte_count: 992516
+    hf_datasets:
+    - werty1248/Korea-Related-Reddit-posts
+    - werty1248/Korea-Related-Reddit-comments
+  - filepath: ko/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1941
+    word_count: 200001
+    char_count: 725803
+    byte_count: 1660221
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: ko/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 351
+    word_count: 200186
+    char_count: 730999
+    byte_count: 1659190
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: ko/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 299
+    word_count: 200323
+    char_count: 736171
+    byte_count: 1649164
+    hf_datasets:
+    - wikimedia/wikipedia
+  parities:
+  - filepath: ko/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 36250
+    char_count: 128976
+    byte_count: 308717
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+pl:
+  name: pl
+  pretty_name: Polish
+  n_docs: 3990
+  word_count: 1204690
+  char_count: 7278038
+  byte_count: 7694868
+  domains:
+  - filepath: pl/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 161
+    word_count: 200814
+    char_count: 1468332
+    byte_count: 1553065
+    hf_datasets:
+    - joelniklaus/Multi_Legal_Pile
+  - filepath: pl/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 475
+    word_count: 200012
+    char_count: 1021335
+    byte_count: 1083235
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: pl/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 660
+    word_count: 200309
+    char_count: 1291945
+    byte_count: 1365689
+    hf_datasets:
+    - WiktorS/polish-news
+    - winterkitsune/elka-pl-news
+  - filepath: pl/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1980
+    word_count: 200003
+    char_count: 1005793
+    byte_count: 1067542
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: pl/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 401
+    word_count: 202042
+    char_count: 1245020
+    byte_count: 1311842
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: pl/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 313
+    word_count: 201510
+    char_count: 1245613
+    byte_count: 1313495
+    hf_datasets:
+    - wikimedia/wikipedia
+  parities:
+  - filepath: pl/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 44308
+    char_count: 272953
+    byte_count: 290081
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+pt:
+  name: pt
+  pretty_name: Portuguese
+  n_docs: 7709
+  word_count: 2207307
+  char_count: 11546654
+  byte_count: 11887461
+  domains:
+  - filepath: pt/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 1766
+    word_count: 200061
+    char_count: 1151047
+    byte_count: 1190234
+    hf_datasets:
+    - rntc/pubmed_preprocess
+  - filepath: pt/books.jsonl.gz
+    name: books
+    pretty_name: Books
+    n_docs: 60
+    word_count: 200147
+    char_count: 1070191
+    byte_count: 1100200
+    hf_datasets:
+    - eduagarcia/pd_books_pt
+  - filepath: pt/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 233
+    word_count: 200060
+    char_count: 1088069
+    byte_count: 1124577
+    hf_datasets:
+    - eduagarcia/LegalPT_dedup
+  - filepath: pt/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 746
+    word_count: 200016
+    char_count: 949150
+    byte_count: 977974
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: pt/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 447
+    word_count: 200189
+    char_count: 1077331
+    byte_count: 1112162
+    hf_datasets:
+    - eduagarcia/cc_news_pt_v2
+  - filepath: pt/papers.jsonl.gz
+    name: papers
+    pretty_name: Scientific Papers
+    n_docs: 64
+    word_count: 203324
+    char_count: 1120631
+    byte_count: 1149722
+    hf_datasets:
+    - eduagarcia/scielo_papers
+  - filepath: pt/social.jsonl.gz
+    name: social
+    pretty_name: Social Networks
+    n_docs: 1534
+    word_count: 201484
+    char_count: 982172
+    byte_count: 1010368
+    hf_datasets:
+    - carolina-c4ai/corpus-carolina
+    - tallesl/quinquilharia
+  - filepath: pt/speech_text.jsonl.gz
+    name: speech_text
+    pretty_name: Live Speech
+    n_docs: 88
+    word_count: 201477
+    char_count: 1016674
+    byte_count: 1045417
+    hf_datasets:
+    - bigscience-data/roots_pt_ted_talks_iwslt
+  - filepath: pt/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1983
+    word_count: 200007
+    char_count: 928439
+    byte_count: 953899
+    hf_datasets:
+    - badranx/opus_raw
+    - badranx/opus_raw
+  - filepath: pt/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 373
+    word_count: 200478
+    char_count: 1088899
+    byte_count: 1119758
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: pt/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 415
+    word_count: 200064
+    char_count: 1074051
+    byte_count: 1103150
+    hf_datasets:
+    - bigscience-data/roots_pt_wikipedia
+  parities:
+  - filepath: pt/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 51699
+    char_count: 279427
+    byte_count: 287348
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+ru:
+  name: ru
+  pretty_name: Russian
+  n_docs: 8729
+  word_count: 1612537
+  char_count: 9105314
+  byte_count: 16277665
+  domains:
+  - filepath: ru/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 1622
+    word_count: 200217
+    char_count: 1216954
+    byte_count: 2155849
+    hf_datasets:
+    - rntc/pubmed_preprocess
+    - blinoff/medical_qa_ru_data
+  - filepath: ru/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 562
+    word_count: 201844
+    char_count: 957309
+    byte_count: 1679073
+    hf_datasets:
+    - sevenreasons/genius-lyrics-russian
+  - filepath: ru/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 663
+    word_count: 201996
+    char_count: 1233935
+    byte_count: 2239202
+    hf_datasets:
+    - AIR-Bench/qa_news_ru
+    - IlyaGusev/ru_news
+  - filepath: ru/papers.jsonl.gz
+    name: papers
+    pretty_name: Scientific Papers
+    n_docs: 654
+    word_count: 206181
+    char_count: 1333641
+    byte_count: 2427559
+    hf_datasets:
+    - almanach/HALvest
+    - mlsa-iai-msu-lab/ru_sci_bench
+  - filepath: ru/poetry.jsonl.gz
+    name: poetry
+    pretty_name: Poetry
+    n_docs: 2639
+    word_count: 200137
+    char_count: 1002175
+    byte_count: 1820012
+    hf_datasets:
+    - AnyaSchen/russian_poetry_with_keywords
+    - 0x7o/poemma-10k
+  - filepath: ru/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1926
+    word_count: 200003
+    char_count: 935707
+    byte_count: 1629422
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: ru/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 219
+    word_count: 200610
+    char_count: 1214199
+    byte_count: 2200065
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: ru/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 444
+    word_count: 201549
+    char_count: 1211394
+    byte_count: 2126483
+    hf_datasets:
+    - wikimedia/wikipedia
+  parities:
+  - filepath: ru/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 45630
+    char_count: 280198
+    byte_count: 512640
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+vi:
+  name: vi
+  pretty_name: Vietnamese
+  n_docs: 8973
+  word_count: 1602500
+  char_count: 8533015
+  byte_count: 10911187
+  domains:
+  - filepath: vi/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 1008
+    word_count: 200009
+    char_count: 1134548
+    byte_count: 1491352
+    hf_datasets:
+    - VietAI/vi_pubmed
+  - filepath: vi/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 623
+    word_count: 200120
+    char_count: 978453
+    byte_count: 1244785
+    hf_datasets:
+    - sebastiandizon/genius-song-lyrics
+  - filepath: vi/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 3508
+    word_count: 200038
+    char_count: 1129912
+    byte_count: 1488439
+    hf_datasets:
+    - bigscience-data/roots_vi_binhvq_news_corpus
+  - filepath: vi/poetry.jsonl.gz
+    name: poetry
+    pretty_name: Poetry
+    n_docs: 1398
+    word_count: 200092
+    char_count: 1095152
+    byte_count: 1438066
+    hf_datasets:
+    - bigscience-data/roots_vi_vietnamese_poetry
+  - filepath: vi/speech_text.jsonl.gz
+    name: speech_text
+    pretty_name: Live Speech
+    n_docs: 93
+    word_count: 201289
+    char_count: 998330
+    byte_count: 1330496
+    hf_datasets:
+    - bigscience-data/roots_vi_ted_talks_iwslt
+  - filepath: vi/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1943
+    word_count: 200001
+    char_count: 1048378
+    byte_count: 1112708
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: vi/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 248
+    word_count: 200823
+    char_count: 1051970
+    byte_count: 1385317
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: vi/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 152
+    word_count: 200128
+    char_count: 1096272
+    byte_count: 1420024
+    hf_datasets:
+    - wikimedia/wikipedia
+  parities:
+  - filepath: vi/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 50517
+    char_count: 270585
+    byte_count: 358425
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
+zh:
+  name: zh
+  pretty_name: Chinese
+  n_docs: 10769
+  word_count: 2213799
+  char_count: 3999493
+  byte_count: 10471916
+  domains:
+  - filepath: zh/biomedical.jsonl.gz
+    name: biomedical
+    pretty_name: Biomedical
+    n_docs: 541
+    word_count: 200485
+    char_count: 348692
+    byte_count: 943087
+    hf_datasets:
+    - rntc/pubmed_preprocess
+    - DavidLanz/medical_pretrain
+  - filepath: zh/emoji.jsonl.gz
+    name: emoji
+    pretty_name: Emoji Heavy
+    n_docs: 1058
+    word_count: 200591
+    char_count: 336999
+    byte_count: 936742
+    hf_datasets:
+    - Orion-zhen/dpo-emoji-zh
+    - Orion-zhen/dpo-ruozhiba-emoji
+    - shareAI/DPO-zh-en-emoji
+  - filepath: zh/finance.jsonl.gz
+    name: finance
+    pretty_name: Finance
+    n_docs: 72
+    word_count: 209168
+    char_count: 395582
+    byte_count: 943703
+    hf_datasets:
+    - Duxiaoman-DI/FinCorpus
+  - filepath: zh/legal.jsonl.gz
+    name: legal
+    pretty_name: Legal
+    n_docs: 2442
+    word_count: 200116
+    char_count: 355217
+    byte_count: 1042339
+    hf_datasets:
+    - TigerResearch/tigerbot-law-plugin
+  - filepath: zh/lyrics.jsonl.gz
+    name: lyrics
+    pretty_name: Lyrics
+    n_docs: 525
+    word_count: 200180
+    char_count: 422612
+    byte_count: 917871
+    hf_datasets:
+    - dirtycomputer/chinese_lyrics
+    - sebastiandizon/genius-song-lyrics
+  - filepath: zh/news.jsonl.gz
+    name: news
+    pretty_name: News
+    n_docs: 298
+    word_count: 200572
+    char_count: 353696
+    byte_count: 940190
+    hf_datasets:
+    - liswei/news-collection-zhtw
+    - AIR-Bench/qa_news_zh
+  - filepath: zh/poetry.jsonl.gz
+    name: poetry
+    pretty_name: Poetry
+    n_docs: 3343
+    word_count: 200057
+    char_count: 324673
+    byte_count: 949750
+    hf_datasets:
+    - erhwenkuo/poetry-chinese-zhtw
+  - filepath: zh/speech_text.jsonl.gz
+    name: speech_text
+    pretty_name: Live Speech
+    n_docs: 86
+    word_count: 202261
+    char_count: 336544
+    byte_count: 927969
+    hf_datasets:
+    - bigscience-data/roots_zh_ted_talks_iwslt
+  - filepath: zh/subtitles.jsonl.gz
+    name: subtitles
+    pretty_name: Subtitles
+    n_docs: 1989
+    word_count: 200006
+    char_count: 398771
+    byte_count: 917648
+    hf_datasets:
+    - badranx/opus_raw
+  - filepath: zh/web.jsonl.gz
+    name: web
+    pretty_name: Web
+    n_docs: 177
+    word_count: 200122
+    char_count: 347196
+    byte_count: 944987
+    hf_datasets:
+    - HuggingFaceFW/fineweb-2
+  - filepath: zh/wiki.jsonl.gz
+    name: wiki
+    pretty_name: Wikipedia
+    n_docs: 238
+    word_count: 200241
+    char_count: 379511
+    byte_count: 1007630
+    hf_datasets:
+    - bigscience-data/roots_zh-cn_wikipedia
+  parities:
+  - filepath: zh/parity.jsonl.gz
+    name: parity_en
+    pretty_name: Parity (English)
+    n_docs: 2009
+    word_count: 48362
+    char_count: 85427
+    byte_count: 238057
+    reference_filepath: en/parity.jsonl.gz
+    reference_lang: en
+    reference_lang_pretty_name: English
+    reference_word_count: 48421
+    reference_char_count: 257160
+    reference_byte_count: 257386
+    hf_datasets:
+    - openlanguagedata/flores_plus
